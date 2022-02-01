@@ -9,68 +9,14 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
 
-    <style>
-        #map {
-            height: 680px;
-        }
-
-        /* CSS for sidebar */
-
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1;
-            top: 60px;
-            left: 0;
-            background-color: #ffffff;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-
-        .sidebar a {
-            text-decoration: none;
-            font-size: 25px;
-            color: #818181;
-            display: block;
-            transition: 0.3s;
-        }
-
-        .sidebar a:hover {
-            color: #ff0000;
-        }
-
-        .sidebar .closebtn {
-            position: absolute;
-            top: 0px;
-            right: 5px;
-            font-size: 25px;
-            margin-left: 5px;
-        }
-
-        #main {
-            transition: margin-left .5s;
-            padding: 0px;
-        }
-
-        /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-        @media screen and (max-height: 450px) {
-            .sidebar {
-                padding-top: 1px;
-            }
-
-            .sidebar a {
-                font-size: 18px;
-            }
-        }
-    </style>
+{% include 'installations/map_vis_style.html' %}
 
 {% endblock %}
 
 {% block left %}
-{#    <button class="mat-flat-button" onclick="toggleButton()"><i class="fas fa-bars"></i></button>#}
-    <button class="mat-flat-button" onclick="openNav()"><i class="fas fa-bars"></i> Filter</button>
+    <button class="mat-flat-button" onclick="openNav()">
+		<i class="fas fa-bars"></i> Filter
+	</button>
 {% endblock %}
 
 {% block main_content %}
@@ -79,13 +25,8 @@
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
         <div class="col-2">
         </div>
-        {#                    <div class="container-lg"> <!--! adds a  X px left and right padding to any HTML element. -->#}
         <div class="col-11">
             <table>
-{#                <tr class="d-flex">Date range</tr>#}
-{#                <tr>#}
-{#                    <div id="years"></div>#}
-{#                </tr>#}
                 <tr class="d-flex">Map opacity </tr>
                 <tr>
                     <div id="map_opacity"></div>
@@ -96,7 +37,9 @@
                         <label for="city">City:</label>
                     </td>
                     <td class="col-10">
-                        <select name="city" id="city-select" onChange="setMapCenter(this.options[this.selectedIndex].value)">
+                        <select name="city" 
+								id="city-select" 
+						onChange="setMapCenter(this.options[this.selectedIndex].value)">
                             {% for city in cities %}
                                 <option value="{{city.name}}">{{city.name }}</option>
                             {% endfor%}
@@ -106,12 +49,9 @@
 
             </table>
         </div>
-        {#        <div class="col-1">#}
-        {#        </div>#}
     </div>
 
     <div id="main">
-{#        <button class="mat-flat-button"  onclick="toggleButton()"><i class="fas fa-bars"></i></button>#}
         <p>Date range</p>
         <div id="years"></div>
         <br>
@@ -122,11 +62,6 @@
         {{neighbourhoods|json_script:"neighbourhoodsjs"}}
 
         <div>
-{#            <p> Here are the figure list</p>#}
-{#            {{ figures }}#}
-{#            {% for fig in figures %}#}
-{#                {{ fig.name }} --> {{ fig.geojson }} <br>#}
-{#            {% endfor %}#}
         </div>
     </div>
 
@@ -160,7 +95,7 @@
     var mapCenter = [30.041394878798638,31.237350234985355]
     var mymap = L.map('map').setView(mapCenter, 12);
 
-    // Define different tileLayer for map ------------------------------------------------------------------------------
+    // Define different tileLayer for map ---
 
     // mapbox layer
     var mapbox = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -172,37 +107,8 @@
         accessToken: 'pk.eyJ1IjoibW9qaXJvc2kiLCJhIjoiY2t2czl3Y2VzMGE3eTJ2bzJhMXdiMGM4ciJ9.RArnejioh0AnjXVmZWP9-A'
     });
 
-    // stadia layer
-    var stadia = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20,
-        opacity: 0.9,
-        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-    });
-
-    // watercolor layer
-    var Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        subdomains: 'abcd',
-        minZoom: 1,
-        maxZoom: 16,
-        ext: 'jpg'
-    });
-
-    // stamen
-    var Stamen = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        subdomains: 'abcd',
-        minZoom: 0,
-        maxZoom: 20,
-        ext: 'png'
-    });
-
-    // Sat
-    var sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-    });
-
-    // you can change for different Google maps in url using: Hybrid: s,h; Satellite: s; Streets: m; Terrain: p;
+    // you can change for different Google maps in url using: Hybrid: s,h; 
+	//Satellite: s; Streets: m; Terrain: p;
     // Google streets
     var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
         maxZoom: 20,
@@ -229,7 +135,7 @@
 
     mapbox.addTo(mymap)
 
-    //------------------------------------------------------------------------------------------------------------------
+    //------------------------
     // functions to work with Json files on map for Figures
     function onEachFeature(feature,layer) {
         //binds the pop up and tool tip to each feature
@@ -281,8 +187,8 @@
     }
 
     function get_style(pk) {
-        //style is a foreign key on the figure object, this function returns the correct style based on
-        // the pk
+        //style is a foreign key on the figure object, 
+		//this function returns the correct style based on the pk
         for (i = 0; i<styles.length; i++) {
             if (styles[i].pk === pk) {return styles[i]}
         }
@@ -290,7 +196,8 @@
     }
 
     function make_style(figure){
-        //create a dict that sets the style of a figure (based on the style objects in the database
+        //create a dict that sets the style of a figure 
+		//(based on the style objects in the database
         style= get_style(figure.fields.style);
         var myStyle = {
             "color": style.fields.color,
@@ -316,8 +223,10 @@
         Landlayers.sort((a,b) => a.style.z_index - b.style.z_index)
         for (i = 0; i<Landlayers.length; i++) {
             layer = Landlayers[i];
-            //check whether a figure overlaps with the current time range and only plot those that do
-            overlap = check_overlap(layer.figure.fields.start_date, layer.figure.fields.end_date)
+            //check whether a figure overlaps with the current time range 
+			//and only plot those that do
+            overlap = check_overlap(layer.figure.fields.start_date, 
+				layer.figure.fields.end_date)
             if (overlap) {mymap.addLayer(layer.layer);}
             else {mymap.removeLayer(layer.layer);}
         }
@@ -332,7 +241,7 @@
         show_layers();
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    //------------------------------------
     // functions to work with Json files of Neighbourhoods
     function onEachFeature_neighbour(feature,layer) {
         //binds the pop up and tool tip to each feature
@@ -344,7 +253,8 @@
     function make_pop_up_neighbour(neighbourhood) {
         //create a pop up based on the neighbourhood information
         [app_name,model_name] = neighbourhood.model.split('.')
-        var m = '<p class="mt-0 mb-0">'+'Neighbourhood '+neighbourhood.fields.neighbourhood_number+'</p>'
+        var m = '<p class="mt-0 mb-0">'+'Neighbourhood '
+		m += neighbourhood.fields.neighbourhood_number+'</p>'
         m += '<a class = "btn btn-link btn-sm mt-1 pl-0 text-dark" href='
         m += '/installations/neighbourhood/new/' + neighbourhood.pk
         m += ' role="button"><i class="far fa-edit"></i></a>'
@@ -354,7 +264,8 @@
     async function add_neighbourhood(neighbourhood) {
         //function loads the json figure connected to figure through ajax
         //fetches the correct style and creates a popup and tooltip
-        console.log(neighbourhood.fields.extent_shapefile, "file address for neighbourhood")
+        console.log(neighbourhood.fields.extent_shapefile, 
+			"file address for neighbourhood")
         const response = await fetch('/media/'+neighbourhood.fields.extent_shapefile)
         const data = await response.json()
         console.log(data, "data for neighbourhood")
@@ -372,11 +283,14 @@
             style = make_style(neighbourhood);
         }
         var pop_up = make_pop_up_neighbour(neighbourhood);
-        var tooltip_str = 'Neighbourhood '+ neighbourhood.fields.neighbourhood_number.toString();
+        var tooltip_str = 'Neighbourhood '
+		tooltip_str += neighbourhood.fields.neighbourhood_number.toString();
         add_popup_and_tooltip(data,pop_up,tooltip_str)
         {#L.geoJSON(data).addTo(mymap)#}
-        var geosjson_layer = L.geoJSON(data,{style:style,onEachFeature:onEachFeature_neighbour})
-	    Neighbourlayers.push({'neighbourhood':neighbourhood,'layer':geosjson_layer,'style':style})
+        var geosjson_layer = L.geoJSON(data,
+			{style:style,onEachFeature:onEachFeature_neighbour})
+	    Neighbourlayers.push({'neighbourhood':neighbourhood,
+			'layer':geosjson_layer,'style':style})
     }
 
     function show_layers_neighbour(){
@@ -394,7 +308,7 @@
         }
         show_layers_neighbour();
     }
-    // add Neighbourhoods-----------------------------------------------------------------------------------------------
+    // add Neighbourhoods------------------------
     var Neighbourlayers = [];
     neighbourhoods = JSON.parse(document.getElementById('neighbourhoodsjs').textContent)
 
@@ -404,7 +318,7 @@
     }
 
     check_done_loading_neighbour(Neighbourlayers,neighbourhoods.length);
-    //add Figures-------------------------------------------------------------------------------------------------------
+    //add Figures-------------------------------
     var Landlayers = [];
     styles = JSON.parse(document.getElementById('stylesjs').textContent)
     figures = JSON.parse(document.getElementById('figuresjs').textContent)
@@ -415,7 +329,7 @@
     }
 
     check_done_loading(Landlayers,figures.length);
-    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------
     // Multi slider for Date range
     var start = 1000;
     var end = 1400;
@@ -426,20 +340,22 @@
         range: {'min':000,'max':2000},
         steps: 50,
         tooltips: true,
-        format: {to: function (value) {return Math.floor(value)},from: function (value) {return Math.floor(value)}},
+        format: {to: function (value) {return Math.floor(value)},
+			from: function (value) {return Math.floor(value)}},
     });
 
     multi_slider.noUiSlider.on('change',handleYearSlider);
 
     function handleYearSlider(values) {
-        //set start and end values based on the year slider, this is used to determine which
+        //set start and end values based on the year slider, 
+		//this is used to determine which
         //figures are shown
         start= values[0];
         end= values[1];
         console.log(values)
         show_layers();
     }
-    //------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------
     //create slider to control opacity of the map tiles
     var slider = document.getElementById('map_opacity');
     noUiSlider.create(slider, {
@@ -455,10 +371,9 @@
         googleStreets.setOpacity(value/100);
         googleSat.setOpacity(value/100);
     });
-    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------
     // Layer controller
     var baseMaps = {
-       {#"Gray": stadia,#}
        "MapBox": mapbox,
        "Google streets": googleStreets,
        "Google satellite": googleSat,
@@ -469,7 +384,7 @@
 
     L.control.layers(baseMaps, overlayMaps).addTo(mymap);
 
-    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------
     // City filter
     function setMapCenter(chosen) {
         cityjs = JSON.parse(document.getElementById('cjsjs').textContent)
@@ -481,7 +396,7 @@
             }
         }
     }
-    //------------------------------------------------------------------------------------------------------------------
+    //-----------------------
     //
 
 
