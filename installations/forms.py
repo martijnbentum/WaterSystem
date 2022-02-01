@@ -13,6 +13,9 @@ from django_select2 import forms as s2forms
 from django.forms.widgets import ClearableFileInput
 
 
+attrs_lower_bound={'placeholder': 'Please enter lower bound'}
+attrs_upper_bound={'placeholder': 'Please enter upper bound'}
+
 # Widgets
 class InstitutionTypeWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -20,17 +23,14 @@ class InstitutionTypeWidget(s2forms.ModelSelect2Widget):
         'un_name__icontains',
     ]
 
-
 class InstitutionTypeWidgetMulti(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
         'name__icontains',
         'un_name__icontains',
     ]
 
-
 class CityWidget(s2forms.ModelSelect2Widget):
     search_fields = ['name__icontains']
-
 
 class NeighbourhoodWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
@@ -38,17 +38,14 @@ class NeighbourhoodWidget(s2forms.ModelSelect2MultipleWidget):
         'city__name__icontains',
     ]
 
-
 class NeighbourhoodWidget2(s2forms.ModelSelect2Widget):  # this is for o
     search_fields = [
         'neighbourhood_number__icontains',
         'city__name__icontains',
     ]
 
-
 class ReligionWidget(s2forms.ModelSelect2Widget):
     search_fields = ['name__icontains']
-
 
 class SecondaryLiteratureWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -56,13 +53,11 @@ class SecondaryLiteratureWidget(s2forms.ModelSelect2Widget):
         "author__icontains",
     ]
 
-
 class SecondaryLiteratureWidgetMulti(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
         "title__icontains",
         "author__icontains",
     ]
-
 
 class EvidenceWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -72,7 +67,6 @@ class EvidenceWidget(s2forms.ModelSelect2Widget):
         "un_author__icontains",
     ]
 
-
 class EvidenceWidgetMulti(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
         "title__icontains",
@@ -81,13 +75,11 @@ class EvidenceWidgetMulti(s2forms.ModelSelect2MultipleWidget):
         "un_author__icontains",
     ]
 
-
 class WatersystemWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         'original_term__icontains',
         'un_original_term__icontains',
     ]
-
 
 class WatersystemWidgetMulti(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
@@ -95,11 +87,9 @@ class WatersystemWidgetMulti(s2forms.ModelSelect2MultipleWidget):
         'un_original_term__icontains',
     ]
 
-
 class PurposeWidget(s2forms.ModelSelect2MultipleWidget):
     model = Purpose
     search_fields = ['name__icontains']
-
 
 class InstallationWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -107,20 +97,17 @@ class InstallationWidget(s2forms.ModelSelect2Widget):
         'un_name__icontains',
     ]
 
-
 class InstitutionWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         'name__icontains',
         'un_name__icontains',
     ]
 
-
 class PersonWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         'name__icontains',
         'un_name__icontains',
     ]
-
 
 class StyleWidget(s2forms.ModelSelect2Widget):
     search_fields = ['name__icontains', ]
@@ -142,7 +129,6 @@ class UserProfileInfoForm(forms.ModelForm):
         fields = ()
 
 
-#
 class CityForm(ModelForm):
     class Meta:
         model = City
@@ -160,7 +146,6 @@ class CityForm(ModelForm):
         self.fields['longitude'].required = False
         self.helper = FormHelper()
 
-
 class InstitutionForm(ModelForm):
     class Meta:
         model = Institution
@@ -174,7 +159,6 @@ class InstitutionForm(ModelForm):
                    'style': 'width:100%;', 'class': 'searching',
                    'data-minimum-input-length': '1'}),
         required=False)
-
     type_many = forms.ModelMultipleChoiceField(
         queryset=InstitutionType.objects.all(),
         widget=InstitutionTypeWidgetMulti(
@@ -202,15 +186,17 @@ class InstitutionForm(ModelForm):
                    'style': 'width:100%;', 'class': 'searching',
                    'data-minimum-input-length': '1'}))
     latitude = forms.DecimalField(max_digits=8, decimal_places=5,
-                                  widget=forms.NumberInput(attrs={'placeholder': 'Latitude'}))
+        widget=forms.NumberInput(attrs={'placeholder': 'Latitude'}))
     longitude = forms.DecimalField(max_digits=8, decimal_places=5,
-                                   widget=forms.NumberInput(attrs={'placeholder': 'Longitude'}))
-    start_date_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    start_date_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
-    first_reference_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    first_reference_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
-    end_date_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    end_date_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
+        widget=forms.NumberInput(attrs={'placeholder': 'Longitude'}))
+    start_date_lower = forms.CharField(widget=forms.TextInput(attrs=attrs_lower_bound))
+    start_date_upper = forms.CharField(widget=forms.TextInput(attrs=attrs_upper_bound))
+    first_reference_lower=forms.CharField(widget=forms.TextInput(
+        attrs=attrs_lower_bound))
+    first_reference_upper=forms.CharField(widget=forms.TextInput(
+        attrs=attrs_upper_bound))
+    end_date_lower = forms.CharField(widget=forms.TextInput(attrs=attrs_lower_bound))
+    end_date_upper = forms.CharField(widget=forms.TextInput(attrs=attrs_upper_bound))
     religion = forms.ModelChoiceField(
         queryset=Religion.objects.all(),
         widget=ReligionWidget(
@@ -226,7 +212,6 @@ class InstitutionForm(ModelForm):
     comment = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 3}),
         required=False)
-
     status = forms.BooleanField()
 
     def __init__(self, *args, **kwargs):
@@ -248,7 +233,9 @@ class InstitutionForm(ModelForm):
         self.fields['status'].required = False
 
         if not instance:
-            self.initial['name'] = 'Institution-' + str(generate_num('installations', 'Institution')).zfill(4)
+            name = 'Institution-'  
+            name += str(generate_num('installations', 'Institution')).zfill(4)
+            self.initial['name'] = name
 
 
 class PersonForm(ModelForm):
@@ -256,18 +243,18 @@ class PersonForm(ModelForm):
         model = Person
         fields = '__all__'
         widgets = {
-            "religion": ReligionWidget(attrs={'data-placeholder': 'Select religion',
-                                              'style': 'width:100%;', 'class': 'searching',
-                                              'data-minimum-input-length': '1'}),
-            "evidence": EvidenceWidget(attrs={'data-placeholder': 'Select evidence',
-                                              'style': 'width:100%;', 'class': 'searching',
-                                              'data-minimum-input-length': '1'}),
+            "religion": ReligionWidget(
+                attrs={'data-placeholder': 'Select religion','style': 'width:100%;',
+                    'class': 'searching','data-minimum-input-length': '1'}),
+                                  
+            "evidence": EvidenceWidget(
+                attrs={'data-placeholder': 'Select evidence','style': 'width:100%;',
+                    'class': 'searching','data-minimum-input-length': '1'}),
         }
-
-    birth_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    birth_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
-    death_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    death_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
+    birth_lower = forms.CharField(widget=forms.TextInput(attrs=attrs_lower_bound))
+    birth_upper = forms.CharField(widget=forms.TextInput(attrs=attrs_upper_bound))
+    death_lower = forms.CharField(widget=forms.TextInput(attrs=attrs_lower_bound))
+    death_upper = forms.CharField(widget=forms.TextInput(attrs=attrs_upper_bound))
     secondary_literature = forms.ModelMultipleChoiceField(
         queryset=SecondaryLiterature.objects.all(),
         widget=SecondaryLiteratureWidgetMulti(
@@ -288,7 +275,6 @@ class PersonForm(ModelForm):
         self.fields['death_lower'].required = False
         self.fields['death_upper'].required = False
         self.fields['status'].required = False
-        # self.fields['religion'].empty_label = "Select religion"
         self.fields['secondary_literature'].empty_label = "Select secondary literature"
         self.fields['gender'].empty_label = "Select gender"
 
@@ -308,20 +294,22 @@ class SecondaryLiteratureForm(ModelForm):
 
 class InstallationForm(ModelForm):
     watersystem = forms.ModelChoiceField(
-        queryset=Watersystem.objects.all(),  # this line refreshes the list when new item is entered using plus button
+        # this line refreshes the list when new item is entered using plus button
+        queryset=Watersystem.objects.all(),  
         widget=WatersystemWidget(
             attrs={'data-placeholder': 'Select a water system',
                    'style': 'width:100%;', 'class': 'searching',
                    'data-minimum-input-length': '1'}),
         required=False)
-    construction_date_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    construction_date_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
-    first_reference_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    first_reference_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
+    alb, aub = attrs_lower_bound, attrs_upper_bound
+    construction_date_lower = forms.CharField(widget=forms.TextInput(attrs=alb))
+    construction_date_upper = forms.CharField(widget=forms.TextInput(attrs=aub))
+    first_reference_lower = forms.CharField(widget=forms.TextInput(attrs=alb))
+    first_reference_upper = forms.CharField(widget=forms.TextInput(attrs=aub))
     end_functioning_year_lower = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
+        widget=forms.TextInput(attrs=alb))
     end_functioning_year_upper = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
+        widget=forms.TextInput(attrs=aub))
     purpose = forms.ModelMultipleChoiceField(
         queryset=Purpose.objects.all().order_by('name'),
         widget=PurposeWidget(
@@ -342,9 +330,9 @@ class InstallationForm(ModelForm):
                    'style': 'width:100%;', 'class': 'searching',
                    'data-minimum-input-length': '1'}))
     latitude = forms.DecimalField(max_digits=8, decimal_places=5,
-                                  widget=forms.NumberInput(attrs={'placeholder': 'Latitude'}))
+        widget=forms.NumberInput(attrs={'placeholder': 'Latitude'}))
     longitude = forms.DecimalField(max_digits=8, decimal_places=5,
-                                   widget=forms.NumberInput(attrs={'placeholder': 'Longitude'}))
+        widget=forms.NumberInput(attrs={'placeholder': 'Longitude'}))
     institution_as_location = forms.ModelChoiceField(
         queryset=Institution.objects.all(),
         widget=InstitutionWidget(
@@ -361,7 +349,6 @@ class InstallationForm(ModelForm):
     comment = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 3}),
         required=False)
-
     status = forms.BooleanField()
 
     class Meta:
@@ -390,12 +377,15 @@ class InstallationForm(ModelForm):
         self.fields['status'].required = False
 
         if not instance:
-            self.initial['name'] = 'Installation-' + str(generate_num('installations', 'Installation')).zfill(4)
+            name = 'Installation-' 
+            name += str(generate_num('installations', 'Installation')).zfill(4)
+            self.initial['name'] = name
+
 
 
 class EvidenceForm(ModelForm):
-    date_lower = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter lower bound'}))
-    date_upper = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Please enter upper bound'}))
+    date_lower = forms.CharField(widget=forms.TextInput(attrs=attrs_lower_bound))
+    date_upper = forms.CharField(widget=forms.TextInput(attrs=attrs_upper_bound))
     secondary_literature = forms.ModelChoiceField(
         queryset=SecondaryLiterature.objects.all(),
         widget=SecondaryLiteratureWidget(
@@ -410,7 +400,9 @@ class EvidenceForm(ModelForm):
 
     class Meta:
         model = Evidence
-        fields = ('title', 'author', 'date_lower', 'date_upper', 'secondary_literature', 'description', 'status')
+        f = 'title,author,date_lower,date_upper,secondary_literature,description'
+        f += ',status'
+        fields = f.split(',')
 
     def __init__(self, *args, **kwargs):
         super(EvidenceForm, self).__init__(*args, **kwargs)
@@ -428,10 +420,10 @@ class FigureForm(ModelForm):
             attrs={'data-placeholder': 'Select style',
                    'style': 'width:100%;', 'class': 'searching',
                    'data-minimum-input-length': '1'}))
-
-    start_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'start date'}))
-
-    end_date = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'end date'}))
+    start_date=forms.CharField(widget=forms.TextInput(
+        attrs={'placeholder': 'start date'}))
+    end_date = forms.CharField(widget=forms.TextInput(
+        attrs={'placeholder': 'end date'}))
     neighbourhood = forms.ModelMultipleChoiceField(
         queryset=Neighbourhood.objects.all(),
         widget=NeighbourhoodWidget(
@@ -773,12 +765,14 @@ personneighbourhood_formset = inlineformset_factory(
 personinstitution_formset = inlineformset_factory(
     Person, PersonInstitutionRelation, form=PersonInstitutionRelationForm, extra=1)
 institutionperson_formset = inlineformset_factory(
-    Institution, PersonInstitutionRelation, form=PersonInstitutionRelationForm, extra=1)
+    Institution, PersonInstitutionRelation, form=PersonInstitutionRelationForm, 
+    extra=1)
 
 personinstallation_formset = inlineformset_factory(
     Person, PersonInstallationRelation, form=PersonInstallationRelationForm, extra=1)
 installationperson_formset = inlineformset_factory(
-    Installation, PersonInstallationRelation, form=PersonInstallationRelationForm, extra=1)
+    Installation, PersonInstallationRelation, form=PersonInstallationRelationForm, 
+    extra=1)
 
 personevidence_formset = inlineformset_factory(
     Person, EvidencePersonRelation, form=EvidencePersonRelationForm, extra=1)
@@ -786,33 +780,43 @@ evidenceperson_formset = inlineformset_factory(
     Evidence, EvidencePersonRelation, form=EvidencePersonRelationForm, extra=1)
 
 installationinstitution_formset = inlineformset_factory(
-    Installation, InstitutionInstallationRelation, form=InstitutionInstallationRelationForm, extra=1)
+    Installation, InstitutionInstallationRelation, 
+    form=InstitutionInstallationRelationForm, extra=1)
 institutioninstallation_formset = inlineformset_factory(
-    Institution, InstitutionInstallationRelation, form=InstitutionInstallationRelationForm, extra=1)
+    Institution, InstitutionInstallationRelation, 
+    form=InstitutionInstallationRelationForm, extra=1)
 
 installationevidence_formset = inlineformset_factory(
-    Installation, EvidenceInstallationRelation, form=EvidenceInstallationRelationForm, extra=1)
+    Installation, EvidenceInstallationRelation, 
+    form=EvidenceInstallationRelationForm, extra=1)
 evidenceinstallation_formset = inlineformset_factory(
-    Evidence, EvidenceInstallationRelation, form=EvidenceInstallationRelationForm, extra=1)
+    Evidence, EvidenceInstallationRelation, form=EvidenceInstallationRelationForm, 
+    extra=1)
 
 institutionevidence_formset = inlineformset_factory(
-    Institution, EvidenceInstitutionRelation, form=EvidenceInstitutionRelationForm, extra=1)
+    Institution, EvidenceInstitutionRelation, 
+    form=EvidenceInstitutionRelationForm, extra=1)
 evidenceinstitution_formset = inlineformset_factory(
-    Evidence, EvidenceInstitutionRelation, form=EvidenceInstitutionRelationForm, extra=1)
+    Evidence, EvidenceInstitutionRelation, form=EvidenceInstitutionRelationForm, 
+    extra=1)
 
 installationinstallation_formset = inlineformset_factory(
-    Installation, InstallationInstallationRelation, fk_name='primary', fields='__all__', extra=1,
+    Installation, InstallationInstallationRelation, 
+    fk_name='primary', fields='__all__', extra=1,
     form=InstallationInstallationRelationForm)
 
 institutioninstitution_formset = inlineformset_factory(
-    Institution, InstitutionInstitutionRelation, fk_name='primary', fields='__all__', extra=1,
+    Institution, InstitutionInstitutionRelation, fk_name='primary', 
+    fields='__all__', extra=1,
     form=InstitutionInstitutionRelationForm)
 
 personperson_formset = inlineformset_factory(
-    Person, PersonPersonRelation, fk_name='primary', fields='__all__', extra=1, form=PersonPersonRelationForm)
+    Person, PersonPersonRelation, fk_name='primary', fields='__all__', 
+    extra=1, form=PersonPersonRelationForm)
 
 dattr = {'attrs': {'style': 'width:100%'}}
-dnumber = {'widget': forms.NumberInput(attrs={'style': 'width:100%', 'rows': 3}), 'required': False}
+dnumber = {'widget': forms.NumberInput(attrs={'style': 'width:100%', 'rows': 3}), 
+    'required': False}
 dchar_required = {'widget': forms.TextInput(**dattr), 'required': True}
 
 
