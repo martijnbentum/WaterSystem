@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import socket
-from .secret_key import *
+# from .secret_key import *
+from decouple import config, Csv
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'installations/templates')
@@ -22,12 +23,14 @@ MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECRET_KEY
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = config('DEBUG',cast=bool)
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',cast=Csv())
 
 # Application definition
 
@@ -92,7 +95,8 @@ WSGI_APPLICATION = 'waterSystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '../writable/db.sqlite3'),
+        # 'NAME': os.path.join(BASE_DIR, '../writable/db.sqlite3'),
+		'NAME':config('DB_NAME'),
     }
 }
 
@@ -143,12 +147,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # alternative setup
 CACHES = {"default": {
     "BACKEND": "django_redis.cache.RedisCache",
-    "LOCATION": "redis://127.0.0.1:6379/1",
+    # "LOCATION": "redis://127.0.0.1:6379/1",
+	"LOCATION": config("REDIS_LOCATION"),
     "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient", }
 },
     "select2": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/2",
+        # "LOCATION": "redis://127.0.0.1:6379/2",
+		"LOCATION": config("REDIS_LOCATION_SELECT2"),
         "TIMEOUT": None,
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient", }
     }
