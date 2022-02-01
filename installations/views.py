@@ -16,11 +16,11 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from utilities.views import edit_model
-from utilities.views import search, institutionsimplesearch, personsimplesearch, institutionadvancedsearch, \
-    installationadvancedsearch
-from utilities.views import unaccent_installations, unaccent_institution, unaccent_person, unaccent_evidence, \
-    unaccent_watersystem, unaccent_institutiontype
-from utilities.views import dcopy_complete
+from utilities.views import search, institutionsimplesearch, personsimplesearch 
+from utilities.views import institutionadvancedsearch, installationadvancedsearch
+from utilities.views import unaccent_installations, unaccent_institution 
+from utilities.views import unaccent_person, unaccent_evidence, unaccent_watersystem
+from utilities.views import dcopy_complete,unaccent_institutiontype
 
 from django.db.models.functions import Lower
 from .filters import *
@@ -154,22 +154,15 @@ def CityDelete(request, id):
 
 @login_required
 def edit_institution(request, pk=None, focus='', view='complete'):
-    names = 'institutioninstitution_formset,institutionperson_formset,institutioninstallation_formset,institutionevidence_formset'
-    return edit_model(request, __name__, 'Institution', 'installations', pk, formset_names=names,
-                      focus=focus, view=view)
+    names = 'institutioninstitution_formset,institutionperson_formset'
+    names += ',institutioninstallation_formset,institutionevidence_formset'
+    return edit_model(request, __name__, 'Institution', 'installations', pk, 
+        formset_names=names,focus=focus, view=view)
 
 
 def InstitutionList(request):
     query_set = institutionsimplesearch(request)
     query = request.GET.get("q", "")
-    # order_by = request.GET.get("order_by", "id")
-    # query_set = Institution.objects.all().order_by(order_by)
-    # if query is not None:
-    #     query_set = query_set.filter(
-    #         Q(name__icontains=query) |
-    #         Q(type__name__icontains=query) |
-    #         Q(city__name__icontains=query)
-    #     ).order_by(order_by)
     context = {'institution_list': query_set,
                'nentries': len(query_set),
                'query': query}
@@ -219,19 +212,17 @@ def InstitutionDelete(request, id):
     institution.delete()
     return redirect('installations:institution-list')
 
-
 @method_decorator(login_required, name='dispatch')
 class InstitutionDetailView(DetailView):
     model = Institution
 
-
 @login_required
 def edit_person(request, pk=None, focus='', view='complete'):
-    names = 'personperson_formset,personcity_formset,personneighbourhood_formset,personinstitution_formset,'
+    names = 'personperson_formset,personcity_formset,personneighbourhood_formset'
+    names += ',personinstitution_formset,'
     names += 'personinstallation_formset,personevidence_formset'
-    return edit_model(request, __name__, 'Person', 'installations', pk, formset_names=names,
-                      focus=focus, view=view)
-
+    return edit_model(request, __name__, 'Person', 'installations', pk, 
+        formset_names=names,focus=focus, view=view)
 
 def PersonList(request):
     query_set = personsimplesearch(request)
@@ -312,24 +303,22 @@ class SecondaryLiteratureDetailView(DetailView):
 
 @login_required
 def edit_installation(request, pk=None, focus='', view='complete'):
-    names = 'installationinstallation_formset,installationinstitution_formset,installationperson_formset,installationevidence_formset'
-    return edit_model(request, __name__, 'Installation', 'installations', pk, formset_names=names,
-                      focus=focus, view=view)
-
+    names = 'installationinstallation_formset,installationinstitution_formset'
+    names += ',installationperson_formset,installationevidence_formset'
+    return edit_model(request, __name__, 'Installation', 'installations', pk, 
+        formset_names=names,focus=focus, view=view)
 
 def InstallationList(request):
     query_set = search(request, 'installations', 'installation')
     query = request.GET.get("q", "")
-    # query_set = Installation.objects.all()
-    # if query is not None:
-    #     query_set = query_set.filter(name__icontains=query)
     context = {'installation_list': query_set,
                'nentries': len(query_set),
                'query': query}
     return render(request, 'installations/installation_list.html', context)
 
 
-# this method was working with Django-filter package which had some problems with partial date which I omit it.
+# this method was working with Django-filter package which had some problems 
+# with partial date which I omit it.
 class InstallationListView(ListView):
     model = Installation
     template_name = "installations/installation_advanced_search.html"
@@ -346,7 +335,8 @@ class InstallationListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filter'] = InstallationFilter(self.request.GET, queryset=self.get_queryset())
+        context['filter'] = InstallationFilter(self.request.GET, 
+            queryset=self.get_queryset())
         context["order_by"] = self.request.GET.get("order_by", "id")
         context["direction"] = self.request.GET.get("direction", "ascending")
         return context
@@ -354,7 +344,6 @@ class InstallationListView(ListView):
 
 def InstallationAdvancedSearchList(request):
     query_set = installationadvancedsearch(request)
-
     q_name = request.GET.get("q_name", "")
     q_watersystem = request.GET.get("q_watersystem", "")
     q_constructiondate_l = request.GET.get("q_constructiondate_l", "")
@@ -409,34 +398,6 @@ class InstallationDetailView(DetailView):
 
 def InstallationDuplicate(request, id):
     instance = get_object_or_404(Installation, pk=id)
-    # instance.name += '- copy'
-    # instance.pk = None
-    # instance.save()
-    # # Set ManyToMany relationships after assigning the pk to duplicated one
-    # orig = get_object_or_404(Installation, pk=id)
-    # # instance.purpose.set(orig.purpose.all())
-    # # instance.neighbourhood.set(orig.neighbourhood.all())
-    # # instance.secondary_literature.set(orig.secondary_literature.all())
-    # for f in orig._meta.get_fields():
-    #     if f.many_to_many:
-    #         # print(f.name)
-    #         getattr(instance, f.name).set(getattr(orig, f.name).all())
-    #
-    # # link to relationships (formsets)
-    # # getattr(instance, instance.institutioninstallationrelation).set(getattr(orig, instance.institutioninstallationrelation).all())
-    #     if f.one_to_many:
-    #         print(f.name)
-    #         for r in list(getattr(orig, f.name + '_set').all()):
-    #             print(r)
-    #             rcopy = PersonInstallationRelation.objects.get(pk=r.pk)
-    #             rcopy.pk = None
-    #             setattr(rcopy, installation, instance)
-    #             rcopy.save()
-    # # by doing following it will delete the connections from the original one. I dont know why is that yet.
-    # # instance.institutioninstallationrelation_set.set(orig.institutioninstallationrelation_set.all())
-    # # instance.personinstallationrelation_set.set(orig.personinstallationrelation_set.all())
-    # # instance.evidenceinstallationrelation_set.set(orig.evidenceinstallationrelation_set.all())
-    # ## new method ------------------------------------------------------------------------------------------------------
     dcopy = dcopy_complete(instance)
     dcopy.save()
     return redirect('installations:installation-list')
@@ -466,48 +427,27 @@ class EvidenceListView(ListView):
         context["direction"] = self.request.GET.get("direction", "ascending")
         return context
 
-    # paginate_by = 10
-    #
-    # def get_context_data(self, **kwargs):
-    #     context = super(EvidenceListView, self).get_context_data(**kwargs)
-    #     evidences = self.get_queryset()
-    #     page = self.request.GET.get('page')
-    #     paginator = Paginator(evidences, self.paginate_by)
-    #     try:
-    #         evidences = paginator.page(page)
-    #     except PageNotAnInteger:
-    #         evidences = paginator.page(1)
-    #     except EmptyPage:
-    #         evidences = paginator.page(paginator.num_pages)
-    #     context['evidences'] = evidences
-    #     return context
-
 
 @login_required
 def edit_evidence(request, pk=None, focus='', view='complete'):
     names = ''
-    return edit_model(request, __name__, 'Evidence', 'installations', pk, formset_names=names,
-                      focus=focus, view=view)
-
+    return edit_model(request, __name__, 'Evidence', 'installations', pk, 
+        formset_names=names,focus=focus, view=view)
 
 @method_decorator(login_required, name='dispatch')
 class EvidenceDeleteView(DeleteView):
     model = Evidence
     success_url = reverse_lazy("installations:evidence-list")
 
-
 @method_decorator(login_required, name='dispatch')
 class EvidenceDetailView(DetailView):
     model = Evidence
 
-
 @login_required
 def edit_figure(request, pk=None, focus='', view='complete'):
     names = ''
-    return edit_model(request, __name__, 'Figure', 'installations', pk, formset_names=names,
-                      focus=focus, view=view)
-
-
+    return edit_model(request, __name__, 'Figure', 'installations', pk, 
+        formset_names=names,focus=focus, view=view)
 
 @method_decorator(login_required, name='dispatch')
 class WaterSystemListView(ListView):
@@ -530,7 +470,6 @@ class WaterSystemListView(ListView):
         context["order_by"] = self.request.GET.get("order_by", "id")
         context["direction"] = self.request.GET.get("direction", "ascending")
         return context
-
 
 @method_decorator(login_required, name='dispatch')
 class WaterSystemCreatView(CreateView):
@@ -744,7 +683,7 @@ class NeighbourhoodCreatView(CreateView):
             if viewmode == 'inline':
                 return reverse_lazy('utilities:close')
         else:
-            return reverse_lazy('installations:neighbourhood-list')  # create a list view for this if needed
+            return reverse_lazy('installations:neighbourhood-list')  
 
 
 @method_decorator(login_required, name='dispatch')
@@ -784,7 +723,7 @@ class NeighbourhoodDeleteView(DeleteView):
 
 
 # Relations
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------
 # CityPersonRelation
 @method_decorator(login_required, name='dispatch')
 class CityPersonRelationListView(ListView):
@@ -927,10 +866,7 @@ def Accessory(request):
     return render(request, 'installations/accessory.html')
 
 
-
-
-#
-# MAp Visualization
+# Map Visualization map MAP
 def MapVisualization(request):
     f = Figure.objects.all()
     f = serializers.serialize('json', f)
@@ -940,16 +876,14 @@ def MapVisualization(request):
     s = json.loads(s)
     cities = City.objects.all() # used for the selection dropdown
     cjs = serializers.serialize('json', cities)
-    cjs = json.loads(cjs) # used for having access to the fields of city model in the js scripts
+    # used for having access to the fields of city model in the js scripts
+    cjs = json.loads(cjs) 
     n = Neighbourhood.objects.all()
     n = serializers.serialize('json', n)
     n = json.loads(n)
-    context = {'page_name': 'Map', 'figures': f, 'styles': s, 'cities': cities, 'cjs':cjs, 'neighbourhoods':n}
-
-    # return render(request, 'installations/MAP_back.html', context)
-    # return render(request, 'installations/test_map.html', context)
+    context = {'page_name': 'Map', 'figures': f, 'styles': s, 
+        'cities': cities, 'cjs':cjs, 'neighbourhoods':n}
     return render(request, 'installations/map_visualization.html', context)
-
 
 def geojson_file(request, filename):
     print(filename)
@@ -960,13 +894,6 @@ def geojson_file(request, filename):
     except:
         data = {'json': False}
     return JsonResponse(data)
-
-
-
-# @login_required
-# def edit_style(request, pk=None, focus='', view='complete'):
-#     return edit_model(request, __name__, 'Style', 'installations', pk,
-#                       focus=focus, view=view)
 
 
 @method_decorator(login_required, name='dispatch')
