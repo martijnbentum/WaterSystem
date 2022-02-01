@@ -9,8 +9,10 @@ from colorfield.fields import ColorField
 
 # Notes
 # 1) you can add help text for each field using :e.g. help_text='City name!'.
-# 2) on_delete= models.CASCADE: When the referenced object is deleted, also delete the objects that have references
-#    to it. (When you remove a Country for instance, you might want to delete Cities as well).
+# 2) on_delete= models.CASCADE: When the referenced object is deleted, 
+# also delete the objects that have references
+#    to it. (When you remove a Country for instance, 
+# you might want to delete Cities as well).
 
 # Create your models here.
 
@@ -18,24 +20,11 @@ from colorfield.fields import ColorField
 class UserProfileInfo(models.Model):
     # Create relationship (don't inherit from User!)
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
-
-    # Add any additional attributes you want
-    # portfolio_site = models.URLField(blank=True)
-    # pip install pillow to use this!
-    # Optional: pip install pillow --global-option=”build_ext” --global-option=”--disable-jpeg”
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
 
     def __str__(self):
         # Built-in attribute of django.contrib.auth.models.User!
         return self.user.username
-
-
-# class Station(gismodels.Model):
-#     name = models.CharField(max_length=256)
-#     geom = gismodels.PointField()
-#
-#     def __unicode__(self):
-#         return self.name
 
 
 class City(models.Model):
@@ -61,8 +50,10 @@ class CityEra(models.Model):
 class Citymap(models.Model):
     # map = models.ImageField()
     type = models.CharField(max_length=50, blank=False)
-    city = models.ForeignKey(City, related_name='citymaps', on_delete=models.CASCADE, blank=True)
-    population = models.IntegerField()  # I think we do nat need population here, as we have it in CityEra
+    city = models.ForeignKey(City, related_name='citymaps', 
+        on_delete=models.CASCADE, blank=True)
+    # I think we do nat need population here, as we have it in CityEra
+    population = models.IntegerField()  
     start_date = PartialDateField()
     end_date = PartialDateField()
 
@@ -82,33 +73,30 @@ class Style(models.Model):
 
 
 class Neighbourhood(models.Model):
-    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=False, null=False, default='')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=False, 
+        null=False, default='')
     neighbourhood_number = models.PositiveIntegerField(null=True, blank=True)
-    style = models.ForeignKey(Style, on_delete=models.CASCADE, blank=True, null=True, default=None)
-    extent_shapefile = models.FileField(upload_to='shapefiles/', max_length=50, null=True,
-                                        blank=True)  # Is it correct way?
+    style = models.ForeignKey(Style, on_delete=models.CASCADE, blank=True, 
+        null=True, default=None)
+    extent_shapefile = models.FileField(upload_to='shapefiles/', max_length=50, 
+        null=True,blank=True)  # Is it correct way?
 
     def __str__(self):
         st = self.city.name + ' ' + str(self.neighbourhood_number)
         return st
 
-    # @property
-    # def name(self):
-    #     return '{0} {1}'.format(self.city.name, str(self.neighbourhood_number))
-    #
-    # def __str__(self):
-    #     return self.name
-
-
 class Figure(models.Model):
     '''figure to be plotted on a map.'''
     name = models.CharField(max_length=200)
-    style = models.ForeignKey(Style,  on_delete=models.CASCADE, blank=False, null=False, default='')
+    style = models.ForeignKey(Style,  on_delete=models.CASCADE, blank=False, 
+        null=False, default='')
     start_date = PartialDateField(null=True, blank=True)
     end_date = PartialDateField(null=True, blank=True)
-    geojson = models.FileField(upload_to='shapefiles/', null=False, blank=False, default='')
+    geojson = models.FileField(upload_to='shapefiles/', null=False, 
+        blank=False, default='')
     neighbourhood = models.ManyToManyField(Neighbourhood, blank=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=False, null=False, default='')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=False, 
+        null=False, default='')
     description = models.CharField(max_length=1000, blank=True, default='', null=True)
 
 
@@ -143,12 +131,12 @@ class Evidence(models.Model):
     author = models.CharField(max_length=100, blank=False, default='', null=True)
     date_lower = PartialDateField(blank=True, null=True)
     date_upper = PartialDateField(blank=True, null=True)
-    secondary_literature = models.ForeignKey(SecondaryLiterature, on_delete=models.CASCADE, blank=True, default='',
-                                             null=True)
+    secondary_literature = models.ForeignKey(SecondaryLiterature, 
+        on_delete=models.CASCADE, blank=True, default='',null=True)
     description = models.TextField(max_length=1000, blank=True, default='', null=True)
     status = models.BooleanField("Completed", default=False, blank=True)
     # searchable fields for fields with diacritics  (un: unaccent)
-    un_title = models.CharField(max_length=250, blank=True, default='')  # searchable field with normalize diacritics
+    un_title = models.CharField(max_length=250, blank=True, default='')  
     un_author = models.CharField(max_length=250, blank=True, default='')
     un_description = models.TextField(max_length=1000, blank=True, default='')
 
@@ -178,13 +166,16 @@ class Person(models.Model):
     birth_upper = PartialDateField(blank=True, default='', null=True)
     death_lower = PartialDateField(blank=True, default='', null=True)
     death_upper = PartialDateField(blank=True, default='', null=True)
-    role = models.CharField(max_length=100, blank=True)  # Role field for person and type of involvement field for person-installation relation
-    religion = models.ForeignKey(Religion, on_delete=models.CASCADE, blank=True, default='', null=True)
+    # Role field for person and type of involvement field for 
+    # person-installation relation
+    role = models.CharField(max_length=100, blank=True)  
+    religion = models.ForeignKey(Religion, on_delete=models.CASCADE, 
+        blank=True, default='', null=True)
     secondary_literature = models.ManyToManyField(SecondaryLiterature, blank=True)
     comment = models.TextField(max_length=1000, blank=True, default='', null=True)
     status = models.BooleanField("Completed", default=False, blank=True)
     # searchable fields for fields with diacritics  (un: unaccent)
-    un_name = models.CharField(max_length=250, blank=True, default='')  # searchable field with normalize diacritics
+    un_name = models.CharField(max_length=250, blank=True, default='')  
     un_role = models.CharField(max_length=250, blank=True, default='')
     un_comment = models.TextField(max_length=1000, blank=True, default='', null=True)
 
@@ -203,7 +194,7 @@ class InstitutionType(models.Model):
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField(max_length=1000, blank=True)
     # searchable fields for fields with diacritics  (un: unaccent)
-    un_name = models.CharField(max_length=100, blank=True, default='')  # searchable field with normalize diacritics
+    un_name = models.CharField(max_length=100, blank=True, default='')  
 
     def __str__(self):
         return self.name
@@ -224,34 +215,33 @@ class Purpose(models.Model):
 
 class Institution(models.Model):
     name = models.CharField(max_length=100, blank=False)
-    type = models.ForeignKey(InstitutionType, on_delete=models.CASCADE, blank=True, null=True)  # this will not be
-    # used in the future. I didn't delete this because there is data saved for some entries on the database.
-    type_many = models.ManyToManyField(InstitutionType, related_name='installations', blank=True, default='')
+    type = models.ForeignKey(InstitutionType, on_delete=models.CASCADE, 
+        blank=True, null=True)  # this will not be
+    # used in the future. I didn't delete this because there is data saved 
+    # for some entries on the database.
+    type_many = models.ManyToManyField(InstitutionType, related_name='installations', 
+        blank=True, default='')
     purpose = models.ManyToManyField(Purpose, blank=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
     neighbourhood = models.ManyToManyField(Neighbourhood, blank=True)
-    latitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, null=True, default=0)
-    longitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, null=True, default=0)
-    start_date_lower = PartialDateField(blank=True, null=True)  # this field is for test and explaine the partitial dat
+    latitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, 
+        null=True, default=0)
+    longitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, 
+        null=True, default=0)
+    # this field is for test and explaine the partitial dat
+    start_date_lower = PartialDateField(blank=True, null=True)  
     start_date_upper = PartialDateField(blank=True, null=True)
-    ''''help_text="Date formats:"
-                                                                       "Day: yyyy-mm-dd 1999-12-04  "
-                                                                       "Month: yyyy-mm 1999-12  "
-                                                                       "Year: <integer>y 1999y  "
-                                                                       "Decade: <integer>d 200d 1990-2000  "
-                                                                       "Century: <integer>c 20c 1900-2000  "
-                                                                       "Millennium: <integer>m 2m 1000-2000  "'''
-    # start_date = ... will be the partitial dat
     first_reference_lower = PartialDateField(blank=True, null=True)
     first_reference_upper = PartialDateField(blank=True, null=True)
     end_date_lower = PartialDateField(blank=True, null=True)
     end_date_upper = PartialDateField(blank=True, null=True)
-    religion = models.ForeignKey(Religion, on_delete=models.CASCADE, blank=True, null=True)
+    religion = models.ForeignKey(Religion, on_delete=models.CASCADE, 
+        blank=True, null=True)
     secondary_literature = models.ManyToManyField(SecondaryLiterature, blank=True)
     comment = models.TextField(max_length=1000, blank=True, default='', null=True)
     status = models.BooleanField("Completed", default=False, blank=True)
     # searchable fields for fields with diacritics  (un: unaccent)
-    un_name = models.CharField(max_length=250, blank=True, default='')  # searchable field with normalize diacritics
+    un_name = models.CharField(max_length=250, blank=True, default='')  
     un_comment = models.TextField(max_length=1000, blank=True, default='', null=True)
 
     def __str__(self):
@@ -268,11 +258,12 @@ class Watersystem(models.Model):
     original_term = models.CharField(max_length=100, blank=False)
     type = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(max_length=1000, blank=True, null=True)
-    secondary_literature = models.ForeignKey(SecondaryLiterature, on_delete=models.CASCADE, blank=True, default='',
+    secondary_literature = models.ForeignKey(SecondaryLiterature, 
+        on_delete=models.CASCADE, blank=True, default='',
                                              null=True)
     # searchable fields for fields with diacritics  (un: unaccent)
     un_original_term = models.CharField(max_length=100, blank=True,
-                                        default='')  # searchable field with normalize diacritics
+                                        default='')  
 
     def __str__(self):
         if self.type is not None:
@@ -298,7 +289,8 @@ class WatersystemCategories(models.Model):
 
 class Installation(models.Model):
     name = models.CharField(max_length=250, blank=True, default='')
-    watersystem = models.ForeignKey(Watersystem, on_delete=models.CASCADE, blank=True, null=True)
+    watersystem = models.ForeignKey(Watersystem, on_delete=models.CASCADE, 
+        blank=True, null=True)
     construction_date_lower = PartialDateField(blank=True, null=True)
     construction_date_upper = PartialDateField(blank=True, null=True)
     first_reference_lower = PartialDateField(blank=True, null=True)
@@ -308,16 +300,20 @@ class Installation(models.Model):
     purpose = models.ManyToManyField(Purpose, blank=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
     neighbourhood = models.ManyToManyField(Neighbourhood, blank=True)
-    latitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, null=True, default=0)
-    longitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, null=True, default=0)
-    institution_as_location = models.ForeignKey(Institution, on_delete=models.CASCADE, blank=True, null=True)
-    extent_shapefile = models.FileField(upload_to='shapefiles/', max_length=50, null=True,
-                                        blank=True)  # Is it correct way?
+    latitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, 
+        null=True, default=0)
+    longitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, 
+        null=True, default=0)
+    institution_as_location = models.ForeignKey(Institution, on_delete=models.CASCADE,
+        blank=True, null=True)
+    extent_shapefile = models.FileField(upload_to='shapefiles/', max_length=50, 
+        null=True,blank=True)
     secondary_literature = models.ManyToManyField(SecondaryLiterature, blank=True)
     comment = models.TextField(max_length=1000, blank=True, default='', null=True)
-    status = models.BooleanField("Completed", default=False, blank=True, help_text="Complete")
+    status = models.BooleanField("Completed", default=False, blank=True, 
+        help_text="Complete")
     # searchable fields for fields with diacritics  (un: unaccent)
-    un_name = models.CharField(max_length=250, blank=True, default='')  # searchable field with normalize diacritics
+    un_name = models.CharField(max_length=250, blank=True, default='')  
     un_comment = models.TextField(max_length=1000, blank=True, default='', null=True)
 
     def __str__(self):
@@ -342,19 +338,20 @@ class CityPersonRelation(models.Model):
 
 
 class NeighbourhoodPersonRelation(models.Model):
-    neighbourhood = models.ForeignKey(Neighbourhood, on_delete=models.CASCADE, blank=True)
+    neighbourhood = models.ForeignKey(Neighbourhood, on_delete=models.CASCADE, 
+        blank=True)
     person = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True)
     type_of_involvement = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        # message = "neighbourhood: " + str(self.neighbourhood) + " & " + "person: " + str(self.person) + " relation is " + self.type_of_involvement
         message = "relation is " + self.type_of_involvement
         return message
 
 
 class PersonInstitutionRelation(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True)
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, blank=True, default='')
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, 
+        blank=True, default='')
     type_of_involvement = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
@@ -364,7 +361,8 @@ class PersonInstitutionRelation(models.Model):
 
 class PersonInstallationRelation(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True)
-    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, blank=True, default='')
+    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, 
+        blank=True, default='')
     type_of_involvement = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
@@ -373,15 +371,18 @@ class PersonInstallationRelation(models.Model):
 
 
 class CityInstallationRelation(models.Model):
-    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, blank=False)
+    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, 
+        blank=False)
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True)
     capacity_absolute = models.DecimalField(max_digits=7, decimal_places=2, default=0)
-    capacity_percentage = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    capacity_percentage=models.DecimalField(max_digits=7, decimal_places=2, default=0)
 
 
 class InstitutionInstallationRelation(models.Model):
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, blank=True, default='')
-    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, blank=True)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, 
+        blank=True, default='')
+    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, 
+        blank=True)
     type_of_involvement = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
@@ -392,8 +393,7 @@ class InstitutionInstallationRelation(models.Model):
 class EvidencePersonRelation(models.Model):
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE, blank=False)
-    page_number = models.CharField(max_length=100,
-                                   blank=False)  # I think maybe it's better if we had letter as page numbers also
+    page_number = models.CharField(max_length=100,blank=False)
     description = models.TextField(max_length=1000, blank=True, default=0)
 
     def __str__(self):
@@ -403,9 +403,9 @@ class EvidencePersonRelation(models.Model):
 
 class EvidenceInstitutionRelation(models.Model):
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE)
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, blank=True, default='')
-    page_number = models.CharField(max_length=100,
-                                   blank=False)  # I think maybe it's better if we had letter as page numbers also
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, 
+        blank=True, default='')
+    page_number = models.CharField(max_length=100,blank=False)
     description = models.TextField(max_length=1000, blank=True)
 
     def __str__(self):
@@ -415,9 +415,9 @@ class EvidenceInstitutionRelation(models.Model):
 
 class EvidenceInstallationRelation(models.Model):
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE)
-    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, blank=True, default='')
-    page_number = models.CharField(max_length=100,
-                                   blank=True)  # I think maybe it's better if we had letter as page numbers also
+    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, 
+        blank=True, default='')
+    page_number = models.CharField(max_length=100,blank=True)
     description = models.TextField(max_length=1000, blank=True)
 
     def __str__(self):
@@ -426,20 +426,26 @@ class EvidenceInstallationRelation(models.Model):
 
 
 class InstallationInstallationRelation(models.Model):
-    primary = models.ForeignKey(Installation, related_name='primary', on_delete=models.CASCADE)
-    secondary = models.ForeignKey(Installation, related_name='secondary', on_delete=models.CASCADE)
+    primary = models.ForeignKey(Installation, related_name='primary', 
+        on_delete=models.CASCADE)
+    secondary = models.ForeignKey(Installation, related_name='secondary', 
+        on_delete=models.CASCADE)
     description = models.CharField(max_length=1000, blank=True)
 
 
 class InstitutionInstitutionRelation(models.Model):
-    primary = models.ForeignKey(Institution, related_name='primary', on_delete=models.CASCADE)
-    secondary = models.ForeignKey(Institution, related_name='secondary', on_delete=models.CASCADE)
+    primary = models.ForeignKey(Institution, related_name='primary', 
+        on_delete=models.CASCADE)
+    secondary = models.ForeignKey(Institution, related_name='secondary', 
+        on_delete=models.CASCADE)
     description = models.CharField(max_length=1000, blank=True)
 
 
 class PersonPersonRelation(models.Model):
-    primary = models.ForeignKey(Person, related_name='primary', on_delete=models.CASCADE)
-    secondary = models.ForeignKey(Person, related_name='secondary', on_delete=models.CASCADE)
+    primary = models.ForeignKey(Person, related_name='primary', 
+        on_delete=models.CASCADE)
+    secondary = models.ForeignKey(Person, related_name='secondary', 
+        on_delete=models.CASCADE)
     description = models.CharField(max_length=1000, blank=True)
 
 
