@@ -4,15 +4,13 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from .forms import *
 from .models import *
-from django.views.generic import (View, TemplateView, ListView,
-                                  DetailView, CreateView, UpdateView,
-                                  DeleteView)
+from django.views.generic import View, TemplateView, ListView
+from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Q
 
 # Extra Imports for the Login and Logout Capabilities
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from utilities.views import edit_model
@@ -24,93 +22,10 @@ from utilities.views import dcopy_complete,unaccent_institutiontype
 
 from django.db.models.functions import Lower
 from .filters import *
-from django.core import serializers
-import json
 import os
 
-# Create your views here.
-def register(request):
-    registered = False
-
-    if request.method == 'POST':
-        # Get info from "both" forms
-        # It appears as one form to the user on the .html page
-        user_form = UserForm(data=request.POST)
-        profile_form = UserProfileInfoForm(data=request.POST)
-        # Check to see both forms are valid
-        if user_form.is_valid() and profile_form.is_valid():
-            # Save User Form to Database
-            user = user_form.save()
-            # Hash the password
-            user.set_password(user.password)
-            user.is_active = False
-            # Update with Hashed password
-            user.save()
-            # Now we deal with the extra info!
-            # Can't commit yet because we still need to manipulate
-            profile = profile_form.save(commit=False)
-            # Set One to One relationship between
-            # UserForm and UserProfileInfoForm
-            profile.user = user
-            # Check if they provided a profile picture
-            if 'profile_pic' in request.FILES:
-                print('found it')
-                # If yes, then grab it from the POST form reply
-                profile.profile_pic = request.FILES['profile_pic']
-            # Now save model
-            profile.save()
-            # Registration Successful!
-            registered = True
-        else:
-            # One of the forms was invalid if this else gets called.
-            print(user_form.errors, profile_form.errors)
-    else:
-        # Was not an HTTP post so we just render the forms as blank.
-        user_form = UserForm()
-        profile_form = UserProfileInfoForm()
-    # This is the render and context dictionary to feed
-    # back to the registration.html file page.
-    return render(request, 'installations/registration.html',
-                  {'user_form': user_form,
-                   'profile_form': profile_form,
-                   'registered': registered})
-
-
-def user_login(request):
-    if request.method == 'POST':
-        # First get the username and password supplied
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        # Django's built-in authentication function:
-        user = authenticate(username=username, password=password)
-        # If we have a user
-        if user:
-            # Check it the account is active
-            if user.is_active:
-                # Log the user in.
-                login(request, user)
-                # Send the user back to some page. In this case their homepage.
-                return HttpResponseRedirect(reverse('installations:home'))
-            else:
-                # If account is not active:
-                return HttpResponse("Your account is not active.")
-        else:
-            print("Someone tried to login and failed.")
-            print("They used username: {} and password: {}".format(username, password))
-            return HttpResponse("Invalid login details supplied.")
-
-    else:
-        # Nothing has been provided for username or password.
-        return render(request, 'installations/login.html', {})
-
-
-@login_required
-def user_logout(request):
-    # Log out the user.
-    logout(request)
-    # Return to homepage.
-    return HttpResponseRedirect(reverse('installations:home'))
-
+from .views_user import register, user_login, user_logout
+from .views_map import MapVisualization, geojson_file
 
 # Forms and lists
 def Home(request):
@@ -138,6 +53,7 @@ def CityCreate(request, id=0, view=None):
         return redirect('utilities:close')
     else:
         return redirect('installations:city-list')
+
 
 
 def CityList(request):
@@ -864,36 +780,6 @@ def Accessory(request):
         unaccent_institutiontype(request, 'installations', 'institutiontype')
 
     return render(request, 'installations/accessory.html')
-
-
-# Map Visualization map MAP
-def MapVisualization(request):
-    f = Figure.objects.all()
-    f = serializers.serialize('json', f)
-    f = json.loads(f)
-    s = Style.objects.all()
-    s = serializers.serialize('json', s)
-    s = json.loads(s)
-    cities = City.objects.all() # used for the selection dropdown
-    cjs = serializers.serialize('json', cities)
-    # used for having access to the fields of city model in the js scripts
-    cjs = json.loads(cjs) 
-    n = Neighbourhood.objects.all()
-    n = serializers.serialize('json', n)
-    n = json.loads(n)
-    context = {'page_name': 'Map', 'figures': f, 'styles': s, 
-        'cities': cities, 'cjs':cjs, 'neighbourhoods':n}
-    return render(request, 'installations/map_visualization.html', context)
-
-def geojson_file(request, filename):
-    print(filename)
-    if not os.path.isfile('media/shapefiles/'+filename): data = {'file': False}
-    a = open('media/shapefiles/'+filename).read()
-    try:
-        data = json.loads(a)
-    except:
-        data = {'json': False}
-    return JsonResponse(data)
 
 
 @method_decorator(login_required, name='dispatch')
