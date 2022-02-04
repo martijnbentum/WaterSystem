@@ -42,7 +42,8 @@ def edit_model(request, name_space, model_name, app_name, instance_id=None,
     if request.method == 'POST':
         focus, button = getfocus(request), getbutton(request)
         if button in 'delete,cancel,confirm_delete':
-            return delete_model(request, name_space, model_name, app_name, instance_id)
+            return delete_model(request, name_space, model_name, 
+                app_name, instance_id)
         if button == 'saveas' and instance: instance = copy_complete(instance)
         form = modelform(request.POST, request.FILES, instance=instance)
         if form.is_valid():
@@ -55,11 +56,8 @@ def edit_model(request, name_space, model_name, app_name, instance_id=None,
                 if valid:
                     show_messages(request, button, model_name)
                     if button == 'add_another':
-                        # return HttpResponseRedirect(reverse(app_name + ':add_' + model_name.lower()))
-                        return HttpResponseRedirect(reverse(app_name + ':' + model_name.lower() + '-insert'))
-                    # return HttpResponseRedirect(reverse(
-                    #     app_name + ':edit_' + model_name.lower(),
-                    #     kwargs={'pk': instance.pk, 'focus': focus}))
+                        url = app_name + ':' + model_name.lower() + '-insert'
+                        return HttpResponseRedirect(reverse(url))
                     if focus == '':
                         focus = 'Edit'
                     return HttpResponseRedirect(reverse(
@@ -72,7 +70,8 @@ def edit_model(request, name_space, model_name, app_name, instance_id=None,
     if not form: form = modelform(instance=instance)
     if not ffm: ffm = FormsetFactoryManager(name_space, names, instance=instance)
     tabs = make_tabs(model_name.lower(), focus_names=focus)
-    page_name = 'Edit ' + model_name.lower() if instance_id else 'Add ' + model_name.lower()
+    name = model_name.lower()
+    page_name = 'Edit ' + name if instance_id else 'Add ' + name
     args = {'form': form, 'page_name': page_name, 'crud': crud,
             'tabs': tabs, 'view': view}
     args.update(ffm.dict)
@@ -82,11 +81,12 @@ def edit_model(request, name_space, model_name, app_name, instance_id=None,
 # @permission_required('utilities.add_generic')
 def add_simple_model(request, name_space, model_name, app_name, page_name):
     '''Function to add simple models with only a form could be extended.
-    request 	django object
-    name_space 	the name space of the module calling this function (to load forms / models)
-    model_name 	name of the model
-    app_name 	name of the app
-    page_name 	name of the page
+    request     django object
+    name_space  the name space of the module calling this function 
+                (to load forms / models)
+    model_name  name of the model
+    app_name    name of the app
+    page_name   name of the page
     The form name should be of format <model_name>Form
     '''
     modelform = view_util.get_modelform(name_space, model_name + 'Form')
@@ -113,9 +113,6 @@ def delete_model(request, name_space, model_name, app_name, pk):
     if request.method == 'POST':
         if button == 'cancel':
             show_messages(request, button, model_name)
-            # return HttpResponseRedirect(reverse(
-            #     app_name + ':edit_' + model_name.lower(),
-            #     kwargs={'pk': instance.pk, 'focus': focus}))
             return HttpResponseRedirect(reverse(
                 app_name + ':' + model_name.lower() + '-update',
                 kwargs={'pk': instance.pk, 'focus': focus}))
@@ -131,7 +128,9 @@ def delete_model(request, name_space, model_name, app_name, pk):
 
 
 def getfocus(request):
-    '''extracts focus variable from the request object to correctly set the active tabs.'''
+    '''extracts focus variable from the request object to correctly 
+    set the active tabs.
+    '''
     if 'focus' in request.POST.keys():
         return request.POST['focus']
     else:
@@ -149,8 +148,10 @@ def getbutton(request):
 def show_messages(request, button, model_name):
     '''provide user feedback on submitting a form.'''
     if button == 'saveas':
-        messages.warning(request,
-                         'saved a copy of ' + model_name + '. Use "save" button to store edits to this copy')
+        m = 'saved a copy of ' + model_name 
+        m += '. Use "save" button to store edits to this copy'
+        messages.warning(request,m)
+                         
     elif button == 'confirm_delete':
         messages.success(request, model_name + ' deleted')
     elif button == 'cancel':
@@ -160,7 +161,9 @@ def show_messages(request, button, model_name):
 
 
 def close(request):
-    '''page that closes itself for on the fly creation of model instances (loaded in a new tab).'''
+    '''page that closes itself for on the fly creation of 
+    model instances (loaded in a new tab).
+    '''
     return render(request, 'utilities/close.html')
 
 
@@ -174,27 +177,6 @@ def search(request, app_name, model_name):
     query = request.GET.get("q", "")
     order_by = request.GET.get("order_by", "id")
     query_set = model.objects.all().order_by(order_by)
-    # Extract all fields except the relations
-    # to include relations, use sorted(model._meta.concrete_fields + model._meta.many_to_many)
-    # all_fields = [field.name for field in sorted(model._meta.concrete_fields)]
-
-    ####### General way to implement search----------------------
-    # if query is not None:
-    #     fields_cf = [f for f in model._meta.fields if isinstance(f, CharField)]  # cf: CharField
-    #     queries = [Q(**{f.name: query}) for f in fields_cf]
-    #
-    #     fields_fk = [f for f in model._meta.fields if isinstance(f, PartialDateField)]  # cf: CharField
-    #     queries.append([Q(**{f.name: PartialDateField(query)}) for f in fields_fk])
-    #
-    #     print(fields_fk)
-    #     print(queries)
-    #
-    #     qs = Q()
-    #     for que in queries:
-    #         qs = qs | que
-    #
-    #     query_set = model.objects.filter(qs)
-    # -----------------------------------------------------------
     queries = query.split()
     if query is not None:
         query_setall = model.objects.none()
@@ -226,18 +208,6 @@ def search(request, app_name, model_name):
         query_set = query_setall.order_by(order_by)
     if query == "":
         query_set = model.objects.all().order_by(order_by)
-        # query_set = query_set.filter(
-        #     Q(name__icontains=query) |
-        #     Q(watersystem__original_term__icontains=query) |
-        #     Q(construction_date_lower__icontains=query) |
-        #     Q(construction_date_upper__icontains=query) |
-        #     Q(first_reference_lower__icontains=query) |
-        #     Q(first_reference_upper__icontains=query) |
-        #     Q(end_functioning_year_lower__icontains=query) |
-        #     Q(end_functioning_year_upper__icontains=query) |
-        #     Q(city__name__icontains=query) |
-        #     Q(purpose__name__icontains=query)
-        # ).order_by(order_by)
 
     return query_set.distinct()
 
@@ -506,7 +476,8 @@ def installationadvancedsearch(request):
 # methods for unaccent the fields for search
 def unaccent_installations(request, app_name, model_name):
     """"This method copies unaccented version of the data to a new un_<field name> which will used for search without
-    diacritics. For instance, if field <name> has a diacritics then <un_name> field won't.
+    diacritics. For instance, if field <name> has a 
+    diacritics then <un_name> field won't.
     Search fields for installation are:
     - name --> un_name
     - comment --> un_comment
@@ -524,8 +495,10 @@ def unaccent_installations(request, app_name, model_name):
 
 
 def unaccent_institution(request, app_name, model_name):
-    """"This method copies unaccented version of the data to a new un_<field name> which will used for search without
-        diacritics. For instance, if field <name> has a diacritics then <un_name> field won't.
+    """"This method copies unaccented version of the data to a 
+        new un_<field name> which will used for search without
+        diacritics. For instance, if field <name> has a diacritics 
+        then <un_name> field won't.
         Search fields for institution are:
         - name --> un_name
         - comment --> un_comment
@@ -543,8 +516,10 @@ def unaccent_institution(request, app_name, model_name):
 
 
 def unaccent_person(request, app_name, model_name):
-    """"This method copies unaccented version of the data to a new un_<field name> which will used for search without
-        diacritics. For instance, if field <name> has a diacritics then <un_name> field won't.
+    """"This method copies unaccented version of the data to a new 
+        un_<field name> which will used for search without
+        diacritics. For instance, if field <name> has a diacritics 
+        then <un_name> field won't.
         Search fields for person are:
         - name --> un_name
         - role --> un_role
@@ -566,14 +541,15 @@ def unaccent_person(request, app_name, model_name):
 
 
 def unaccent_evidence(request, app_name, model_name):
-    """"This method copies unaccented version of the data to a new un_<field name> which will used for search without
-        diacritics. For instance, if field <name> has a diacritics then <un_name> field won't.
+    '''This method copies unaccented version of the data to a new 
+        un_<field name> which will used for search without
+        diacritics. For instance, if field <name> has a diacritics 
+        then <un_name> field won't.
         Search fields for evidence are:
         - title --> un_title
         - author --> un_author
         - description --> un_description
-
-        """
+    ''' 
     model = apps.get_model(app_name, model_name)
     query_set = model.objects.all()
     for query in query_set:
@@ -589,12 +565,14 @@ def unaccent_evidence(request, app_name, model_name):
 
 
 def unaccent_watersystem(request, app_name, model_name):
-    """"This method copies unaccented version of the data to a new un_<field name> which will used for search without
-        diacritics. For instance, if field <name> has a diacritics then <un_name> field won't.
+    '''This method copies unaccented version of the data to a new 
+        un_<field name> which will used for search without
+        diacritics. For instance, if field <name> has a diacritics 
+        then <un_name> field won't.
         Search fields for water system are:
         - original_term --> un_original_term
+    '''
 
-        """
     model = apps.get_model(app_name, model_name)
     query_set = model.objects.all()
     for query in query_set:
@@ -604,13 +582,14 @@ def unaccent_watersystem(request, app_name, model_name):
 
 
 def unaccent_institutiontype(request, app_name, model_name):
-    """"This method copies unaccented version of the data to a new un_<field name> which will used for search without
-        diacritics. For instance, if field <name> has a diacritics then <un_name> field won't.
+    '''This method copies unaccented version of the data to a 
+        new un_<field name> which will used for search without
+        diacritics. For instance, if field <name> has a 
+        diacritics then <un_name> field won't.
         Search fields for institution type are:
         - name --> un_name
-        -
+    '''
 
-        """
     model = apps.get_model(app_name, model_name)
     query_set = model.objects.all()
     for query in query_set:
@@ -619,16 +598,15 @@ def unaccent_institutiontype(request, app_name, model_name):
             query.save()
 
 
-# Functions for copy_complete: duplicate an entry ----------------------------------------------------------------------
+# Functions for copy_complete: duplicate an entry -----------------------
 def instance2names(instance):
-    app_name, model_name = instance._meta.app_label, instance._meta.model_name.capitalize()
+    app_name = instance._meta.app_label 
+    model_name = instance._meta.model_name.capitalize()
     return app_name, model_name
-
 
 def instance2name(instance):
     app_name, model_name = instance2names(instance)
     return model_name
-
 
 def dcopy_complete(instance, commit=True):
     '''copy a model instance completely with all relations.'''
@@ -645,11 +623,10 @@ def dcopy_complete(instance, commit=True):
             getattr(copy, f.name).set(getattr(instance, f.name).all())
     return copy
 
-
 def simple_copy(instance, commit=True, add_copy_suffix=True):
     '''Copy a model instance and save it to the database.
-	m2m and relations are not saved.
-	'''
+    m2m and relations are not saved.
+    '''
     app_name, model_name = instance2names(instance)
     model = apps.get_model(app_name, model_name)
     copy = model.objects.get(pk=instance.pk)
@@ -658,9 +635,7 @@ def simple_copy(instance, commit=True, add_copy_suffix=True):
     for name in 'title,name,caption,first_name'.split(','):
         if hasattr(copy, name):
             print('setting', name)
-            # copy.view()
             setattr(copy, name, getattr(copy, name) + ' !copy!')
-            # copy.view()
             break
     if commit:
         copy.save()
