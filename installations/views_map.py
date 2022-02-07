@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.core import serializers
 import json
 from utils import map_util
+import os
 
 from .models import Figure, Style, City, Neighbourhood, Institution, Installation
 
@@ -28,7 +29,7 @@ def MapVisualization(request):
     return render(request, 'installations/map_visualization.html', context)
 
 def geojson_file(request, filename):
-    print(filename)
+    print(filename,'<----1234')
     if not os.path.isfile('media/shapefiles/'+filename): data = {'file': False}
     a = open('media/shapefiles/'+filename).read()
     try:

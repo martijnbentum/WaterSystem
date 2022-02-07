@@ -178,7 +178,9 @@
         //function loads the json figure connected to figure through ajax
         //fetches the correct style and creates a popup and tooltip
         console.log(figure.fields.geojson, "file address for figurecc")
-        const response = await fetch('/media/'+figure.fields.geojson)
+        //const response = await fetch('/media/'+figure.fields.geojson)
+        console.log('json filename:',figure.fields.geojson)
+        const response = await fetch('/installations/geojson_file/'+figure.fields.geojson)
         const data = await response.json()
         console.log(data, "data for figure")
         style = make_style(figure);

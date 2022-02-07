@@ -193,7 +193,8 @@ urlpatterns = [
     #Map
     # ----------------------------------------------
     path('map/', views.MapVisualization, name='map-visualization'),
-    path('geojson_file/<str:filename>/', views.geojson_file, name='geojson_file'),
+    path('geojson_file/shapefiles/<str:filename>/', views.geojson_file, 
+        name='geojson_file'),
     path('figure/new/', views.edit_figure, name='figure-insert'),
     path('figure/new/<str:view>/', views.edit_figure, name='figure-insert'),
     path('figure/new/<int:pk>', views.edit_figure, name='figure-update'),
