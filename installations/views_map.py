@@ -29,10 +29,18 @@ def MapVisualization(request):
 	return render(request, 'installations/map_visualization.html', context)
 
 def geojson_file(request, filename):
-	print(filename,'<----1234')
-	if not os.path.isfile('media/shapefiles/'+filename): data = {'file': False}
-	a = open('media/shapefiles/'+filename).read()
-	try:data = json.loads(a)
-	except:data = {'json': False}
+	path = '../writable/media/shapefiles/'+filename
+	print(filename,path'<----12345')
+	if not os.path.isfile('../writable/media/shapefiles/'+filename): 
+		print('file not found'
+		return {'file': False}
+	a = open('../writable/media/shapefiles/'+filename).read()
+	print(a,'3333333333')
+	data = json.loads(a)
+	'''
+	except:
+		print
+		return {'json': False}
+	'''
 	print(filename,data,'99999')
 	return JsonResponse(data)
