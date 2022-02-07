@@ -2,8 +2,9 @@ from django.http import JsonResponse
 from django.shortcuts import render 
 from django.core import serializers
 import json
+from utils import map_util
 
-from .models import Figure, Style, City, Neighbourhood
+from .models import Figure, Style, City, Neighbourhood, Institution, Installation
 
 # Map Visualization map MAP
 def MapVisualization(request):
@@ -20,8 +21,10 @@ def MapVisualization(request):
     n = Neighbourhood.objects.all()
     n = serializers.serialize('json', n)
     n = json.loads(n)
+    installations = Installation.objects.all()
     context = {'page_name': 'Map', 'figures': f, 'styles': s, 
-        'cities': cities, 'cjs':cjs, 'neighbourhoods':n}
+        'cities': cities, 'cjs':cjs, 'neighbourhoods':n,
+        'installations':installations}
     return render(request, 'installations/map_visualization.html', context)
 
 def geojson_file(request, filename):
