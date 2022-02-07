@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 import unidecode
 from colorfield.fields import ColorField
+from utils.model_util import Helper
 
 
 # Notes
@@ -287,7 +288,7 @@ class WatersystemCategories(models.Model):
         return self.name
 
 
-class Installation(models.Model):
+class Installation(models.Model, Helper):
     name = models.CharField(max_length=250, blank=True, default='')
     watersystem = models.ForeignKey(Watersystem, on_delete=models.CASCADE, 
         blank=True, null=True)
