@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from utils import view_util
+from utils.model_util import instance2names, instance2name
 from utils.view_util import Crud, Cruds, make_tabs, FormsetFactoryManager
 from .models import copy_complete
 from utilities.search import Search
@@ -599,14 +600,6 @@ def unaccent_institutiontype(request, app_name, model_name):
 
 
 # Functions for copy_complete: duplicate an entry -----------------------
-def instance2names(instance):
-    app_name = instance._meta.app_label 
-    model_name = instance._meta.model_name.capitalize()
-    return app_name, model_name
-
-def instance2name(instance):
-    app_name, model_name = instance2names(instance)
-    return model_name
 
 def dcopy_complete(instance, commit=True):
     '''copy a model instance completely with all relations.'''
