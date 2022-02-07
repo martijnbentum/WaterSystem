@@ -3,11 +3,14 @@
 {% block head %}
     <!-- Leaflet's CSS java scripts are included in base.html -->
     <!-- noUiSlider links -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css"
-          integrity=""
-          crossorigin=""/>
+    <link rel="stylesheet" 
+		href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css"
+	    integrity=""
+        crossorigin=""/>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+    <script 
+		src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js">
+	</script>
 
 {% include 'installations/map_vis_style.html' %}
 
@@ -366,7 +369,6 @@
 
     slider.noUiSlider.on('slide',function(value){
         // set all base maps opacity
-        stadia.setOpacity(value/100);
         mapbox.setOpacity(value/100);
         googleStreets.setOpacity(value/100);
         googleSat.setOpacity(value/100);
