@@ -4,6 +4,8 @@ from django.core import serializers
 import json
 from utils import map_util
 import os
+import sys
+from waterSystem import settings
 
 from .models import Figure, Style, City, Neighbourhood, Institution, Installation
 
@@ -29,18 +31,14 @@ def MapVisualization(request):
 	return render(request, 'installations/map_visualization.html', context)
 
 def geojson_file(request, filename):
-	path = '../writable/media/shapefiles/'+filename
-	print(filename,path'<----12345')
-	if not os.path.isfile('../writable/media/shapefiles/'+filename): 
-		print('file not found'
-		return {'file': False}
-	a = open('../writable/media/shapefiles/'+filename).read()
-	print(a,'3333333333')
-	data = json.loads(a)
-	'''
+	path = settings.MEDIA_DIR + '/shapefiles/'+filename
+	if not os.path.isfile(path): 
+		print('file not found',path,filename)
+		return JsonResponse({'file': False})
+	a = open(path).read()
+	try:data = json.loads(a)
 	except:
-		print
-		return {'json': False}
-	'''
-	print(filename,data,'99999')
+		print('could not load json file:',path,filename,'error info:',sys.exc_info())
+		return JsonResponse({'json': False})
+	print('succesfully loaded:',filename,path)
 	return JsonResponse(data)
