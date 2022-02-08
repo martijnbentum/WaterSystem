@@ -1,0 +1,80 @@
+{% extends 'installations/base.html' %}
+{% load static %}
+
+{% block head %}
+    <!-- Leaflet's CSS java scripts are included in base.html -->
+    <!-- noUiSlider links -->
+    <link rel="stylesheet" 
+		href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css"
+	    integrity=""
+        crossorigin=""/>
+	<link rel="stylesheet"
+		href="{% static 'map/map.css' %}"
+	/>
+	<link rel="stylesheet"
+		href="{% static 'map/slider.css' %}"
+	/>
+
+    <script 
+		src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js">
+	</script>
+    <script 
+		src="{% static 'map/map.js' %}">
+	</script>
+{% endblock %}
+
+{% block left %}
+    <button class="mat-flat-button" onclick="openNav()">
+		<i class="fas fa-bars"></i> Filter
+	</button>
+{% endblock %}
+
+{% block main_content %}
+    <!-- Sidebar -->
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <div class="col-2">
+        </div>
+        <div class="col-11">
+            <table>
+                <tr class="d-flex">Map opacity </tr>
+                <tr>
+                    <div id="map_opacity"></div>
+                </tr>
+                <tr>
+                    <br>
+                    <td class="col-2">
+                        <label for="city">City:</label>
+                    </td>
+                    <td class="col-10">
+                        <select name="city" 
+								id="city-select" 
+						onChange="setMapCenter(this.options[this.selectedIndex].value)">
+                            {% for city in cities %}
+                                <option value="{{city.name}}">{{city.name }}</option>
+                            {% endfor%}
+                        </select>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+
+    <div id="main">
+        <p>Date range</p>
+        <div id="years"></div>
+        <br>
+        <div id="map"></div>
+        {{figures|json_script:"figuresjs"}}
+        {{styles|json_script:"stylesjs"}}
+        {{cjs|json_script:"cjsjs"}}
+        {{neighbourhoods|json_script:"neighbourhoodsjs"}}
+
+        <div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

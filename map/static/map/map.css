@@ -1,0 +1,55 @@
+#map {
+	height: 680px;
+}
+
+/* CSS for sidebar */
+
+.sidebar {
+	height: 100%;
+	width: 0;
+	position: fixed;
+	z-index: 1;
+	top: 60px;
+	left: 0;
+	background-color: #ffffff;
+	overflow-x: hidden;
+	transition: 0.5s;
+	padding-top: 60px;
+}
+
+.sidebar a {
+	text-decoration: none;
+	font-size: 25px;
+	color: #818181;
+	display: block;
+	transition: 0.3s;
+}
+
+.sidebar a:hover {
+	color: #ff0000;
+}
+
+.sidebar .closebtn {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	font-size: 25px;
+	margin-left: 5px;
+}
+
+#main {
+	transition: margin-left .5s;
+	padding: 0px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+	.sidebar {
+		padding-top: 1px;
+	}
+
+	.sidebar a {
+		font-size: 18px;
+	}
+}
+

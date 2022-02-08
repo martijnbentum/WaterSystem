@@ -1,0 +1,52 @@
+/* no box around tooltip (numbers above the handles);
+ */
+.noUi-tooltip {
+  border: 0px;
+  padding: 0px;
+}
+
+/* style handles;
+ */
+.noUi-handle {
+    border: 1px solid black;
+    border-radius: 5px;
+    background: black;
+    box-shadow:none;
+	width: 15px !important;
+	height:15px !important;
+	right: -5px !important;
+	font-size: 14px;
+}
+/* make handel white on hover
+*/
+.noUi-handle:hover{
+	background:white;
+}
+
+/* Handle stripes;(remove them)
+ */
+.noUi-handle:before,
+.noUi-handle:after {
+  width: 0px;
+}
+
+/* remove blue outline on pressed handle
+ */
+.noUi-handle:focus {
+	outline:none;
+}
+
+.noUi-active {
+  box-shadow: none;
+}
+
+/* connect bar color  */
+.noUi-connect {
+	background:black;
+}
+
+.noUi-horizontal, .noUi-vertical {
+    background: lightgrey;
+	height:2px;
+	border:0px solid grey;
+ }
