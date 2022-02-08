@@ -264,6 +264,10 @@ class WatersystemCategories(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def watersystems(self):
+        return list(self.watersystem.all())
+
 
 class Installation(models.Model, Helper):
     name = models.CharField(max_length=250, blank=True, default='')
