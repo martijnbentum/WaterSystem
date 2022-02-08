@@ -1,12 +1,12 @@
 // Js for sidebar
-function openNav() {
-	document.getElementById("sidebar").style.width = "300px";
-	document.getElementById("main").style.marginLeft = "300px";
+function open_left_sidebar() {
+	document.getElementById("left_sidebar").style.width = "220px";
+	document.getElementById("main").style.marginLeft = "220px";
 	document.getElementById("main").style.marginTop = "0px";
 }
 
-function closeNav() {
-	document.getElementById("sidebar").style.width = "0px";
+function close_left_sidebar() {
+	document.getElementById("left_sidebar").style.width = "0px";
 	document.getElementById("main").style.marginLeft = "0px";
 }
 
@@ -25,7 +25,7 @@ function toggleButton() {
 // {#console.log(selectedcity.value, "selected city")#}
 var mapCenter = [30.041394878798638,31.237350234985355]
 var mymap = L.map('map').setView(mapCenter, 12);
-openNav();
+open_left_sidebar();
 console.log('opening nav');
 
 // Define different tileLayer for map ---
