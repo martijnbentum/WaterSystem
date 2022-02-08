@@ -24,7 +24,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', views.Home, name='home'),
     url(r'^admin/', admin.site.urls),
-    url('installations/', include(('installations.urls', 'installations'), namespace="installations")),
+    url('installations/', include(('installations.urls', 'installations'), 
+		namespace="installations")),
+	url('map/', include('map.urls')),
     path('accounts/',include('accounts.urls')),
     path('utilities/',include('utilities.urls')),
     path("select2/", include("django_select2.urls")),
