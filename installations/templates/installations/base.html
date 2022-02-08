@@ -68,6 +68,9 @@
       border-radius: 50%;
       display: inline-block;
     }
+    body {
+        background-color: #eee;
+    }
     </style>
 
 
@@ -80,6 +83,8 @@
 <body>
     {% include 'installations/header.html' %}
     <hr>
+        {% block top %}
+        {% endblock %}
 
     <!-- Place the jumbotron inside the <div class="container"> if you want the jumbotron to NOT extend to the edge of the screen -->
     <div class="jumbotron jumbotron-fluid">    <!--! for the gray background! -->
