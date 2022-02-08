@@ -3,7 +3,6 @@ from .models import *
 # Register your models here.
 
 admin.site.register(City)
-admin.site.register(Citymap)
 admin.site.register(Religion)
 admin.site.register(Person)
 admin.site.register(CityPersonRelation)
