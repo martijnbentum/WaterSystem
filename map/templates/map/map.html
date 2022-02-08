@@ -14,57 +14,29 @@
 	<link rel="stylesheet"
 		href="{% static 'map/slider.css' %}"
 	/>
-
+ <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
     <script 
 		src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js">
 	</script>
-    <script 
-		src="{% static 'map/map.js' %}">
-	</script>
 {% endblock %}
 
-{% block left %}
-    <button class="mat-flat-button" onclick="openNav()">
-		<i class="fas fa-bars"></i> Filter
-	</button>
-{% endblock %}
-
-{% block main_content %}
+{% block top %}
     <!-- Sidebar -->
-    <div id="mySidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <div class="col-2">
-        </div>
-        <div class="col-11">
-            <table>
-                <tr class="d-flex">Map opacity </tr>
-                <tr>
-                    <div id="map_opacity"></div>
-                </tr>
-                <tr>
-                    <br>
-                    <td class="col-2">
-                        <label for="city">City:</label>
-                    </td>
-                    <td class="col-10">
-                        <select name="city" 
-								id="city-select" 
-						onChange="setMapCenter(this.options[this.selectedIndex].value)">
-                            {% for city in cities %}
-                                <option value="{{city.name}}">{{city.name }}</option>
-                            {% endfor%}
-                        </select>
-                    </td>
-                </tr>
-
-            </table>
-        </div>
-    </div>
-
+    {% include 'map/sidebar.html' %}
     <div id="main">
-        <p>Date range</p>
-        <div id="years"></div>
-        <br>
+        <div class="city-links">
+            {% for city in cities %}
+                <a  class="city-link"
+                    href="javascript:void(0)"
+                    id ='{{city}}'
+                    onclick="setMapCenter('{{city}}')">
+                        {{city}}
+                </a>
+            {% endfor %}
+        </div>
+
         <div id="map"></div>
         {{figures|json_script:"figuresjs"}}
         {{styles|json_script:"stylesjs"}}
@@ -75,6 +47,9 @@
         </div>
     </div>
 
+<script 
+    src="{% static 'map/map.js' %}">
+</script>
 
 
 {% endblock %}
