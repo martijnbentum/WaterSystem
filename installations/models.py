@@ -36,6 +36,18 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
+class Neighbourhood(models.Model):
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=False, 
+        null=False, default='')
+    neighbourhood_number = models.PositiveIntegerField(null=True, blank=True)
+    style = models.ForeignKey(Style, on_delete=models.SET_NULL, blank=True, 
+        null=True, default=None)
+    extent_shapefile = models.FileField(upload_to='shapefiles/', max_length=50, 
+        null=True,blank=True)  # Is it correct way?
+
+    def __str__(self):
+        st = self.city.name + ' ' + str(self.neighbourhood_number)
+        return st
 # Landmarks
 
 
