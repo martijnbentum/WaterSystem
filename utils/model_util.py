@@ -1,5 +1,7 @@
 import random
 import string
+from django.core import serializers
+import json
 
 class info():
 	'''inherit from this class to add extra viewing functionality for models'''
@@ -116,3 +118,14 @@ def instance2names(instance):
 def instance2name(instance):
     app_name, model_name = instance2names(instance)
     return model_name
+
+def model2json(model):
+	app_name, model_name = instance2names(model)
+	instances = model.objects.all()
+	o = serializers.serialize('json',instances)
+	filename = app_name + '_' + model_name + '.json'
+	with open(filename,'w') as fout:
+		json.dump(o,fout)
+	return o
+	
+	
