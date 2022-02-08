@@ -1,13 +1,13 @@
 // Js for sidebar
 function openNav() {
-	document.getElementById("mySidebar").style.width = "400px";
-	document.getElementById("main").style.marginLeft = "400px";
+	document.getElementById("sidebar").style.width = "300px";
+	document.getElementById("main").style.marginLeft = "300px";
 	document.getElementById("main").style.marginTop = "0px";
 }
 
 function closeNav() {
-	document.getElementById("mySidebar").style.width = "0";
-	document.getElementById("main").style.marginLeft = "0";
+	document.getElementById("sidebar").style.width = "0px";
+	document.getElementById("main").style.marginLeft = "0px";
 }
 
 function toggleButton() {
@@ -21,10 +21,12 @@ function toggleButton() {
 
 
 // Set view and zoom level for map
-{#var selectedcity = document.getElementById("city-select");#}
-{#console.log(selectedcity.value, "selected city")#}
+// {#var selectedcity = document.getElementById("city-select");#}
+// {#console.log(selectedcity.value, "selected city")#}
 var mapCenter = [30.041394878798638,31.237350234985355]
 var mymap = L.map('map').setView(mapCenter, 12);
+openNav();
+console.log('opening nav');
 
 // Define different tileLayer for map ---
 
@@ -66,6 +68,8 @@ var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z=
 
 mapbox.addTo(mymap)
 
+mapbox.setOpacity(40/100);
+
 //------------------------
 // functions to work with Json files on map for Figures
 function onEachFeature(feature,layer) {
@@ -85,7 +89,7 @@ function make_pop_up(figure) {
 	}
 	else {
 	var m = '<p class="mt-2 mb-0">'+figure.fields.name+'</p>'
-	{#m += '<p class="mt-2 mb-0">'+figure.fields.description+'</p>'#}
+	// {#m += '<p class="mt-2 mb-0">'+figure.fields.description+'</p>'#}
 	m += '<a class = "btn btn-link btn-sm mt-1 pl-0 text-dark" href='
 	m += '/installations/figure/new/' + figure.pk
 	m += ' role="button"><i class="far fa-edit"></i></a>'
@@ -114,7 +118,7 @@ async function add_figure(figure) {
 	style = make_style(figure);
 	var pop_up = make_pop_up(figure);
 	add_popup_and_tooltip(data,pop_up,figure.fields.name)
-	{#L.geoJSON(data).addTo(mymap)#}
+	// {#L.geoJSON(data).addTo(mymap)#}
 	var geosjson_layer = L.geoJSON(data,{style:style,onEachFeature:onEachFeature})
 	Landlayers.push({'figure':figure,'layer':geosjson_layer,'style':style})
 }
@@ -219,7 +223,7 @@ async function add_neighbourhood(neighbourhood) {
 	var tooltip_str = 'Neighbourhood '
 	tooltip_str += neighbourhood.fields.neighbourhood_number.toString();
 	add_popup_and_tooltip(data,pop_up,tooltip_str)
-	{#L.geoJSON(data).addTo(mymap)#}
+	// {#L.geoJSON(data).addTo(mymap)#}
 	var geosjson_layer = L.geoJSON(data,
 		{style:style,onEachFeature:onEachFeature_neighbour})
 	Neighbourlayers.push({'neighbourhood':neighbourhood,
