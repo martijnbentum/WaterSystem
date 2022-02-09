@@ -50,6 +50,7 @@ class Style(models.Model):
         return self.name + ' ' + self.color
 
 class Neighbourhood(models.Model):
+    name = models.CharField(max_length=300,default = '')
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=False, 
         null=False, default='')
     neighbourhood_number = models.PositiveIntegerField(null=True, blank=True)
@@ -61,6 +62,11 @@ class Neighbourhood(models.Model):
     def __str__(self):
         st = self.city.name + ' ' + str(self.neighbourhood_number)
         return st
+
+    def save(self,*args,**kwargs):
+        self.name = self.__str__()
+        super(Neighbourhood,self).save(*args,**kwargs)
+    
 
 class Figure(models.Model):
     '''figure to be plotted on a map.'''
@@ -306,6 +312,7 @@ class Installation(models.Model, Helper):
             self.un_name = unidecode.unidecode(self.name)
             self.un_comment = unidecode.unidecode(self.comment)
         super(Installation, self).save()
+
 
 
 # Relations
