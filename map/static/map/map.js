@@ -113,11 +113,56 @@ function make_pop_up(figure) {
 
 function add_popup_and_tooltip(data,pop_up,figure_name) {
 	//set the pop up and tool tip on geojson features
-	for (i=0;i<data.features.length;i++){
+	for (let i=0;i<data.features.length;i++){
 		var feature = data.features[i]
 		feature['pop_up'] = pop_up
 		feature['tool_tip']= figure_name
 	}
+}
+
+function turnoff_neighbourhoods() {
+    for (let i = 0;  i < Neighbourlayers.length;i++) {
+        var n = Neighbourlayers[i];
+        n.layer.setStyle({fillOpacity:0.0});
+    }
+}
+
+function highlight_neighbourhood(name) {
+    turnoff_neighbourhoods();
+    for (let i = 0;  i < Neighbourlayers.length;i++) {
+        var n = Neighbourlayers[i];
+        if (n.neighbourhood.fields.name == name) {
+            n.layer.setStyle({fillOpacity:0.5});
+        }
+    }
+}
+
+function turnoff_cities() {
+    var cities = document.getElementsByClassName('city-link')
+     for (let i = 0;  i < cities.length;i++) {
+        var city = cities[i];
+        city.style.color = 'lightgrey';
+    }
+}
+
+function highlight_city(name) {
+    turnoff_cities();
+    var e = document.getElementById(name);
+    console.log(e);
+    e.style.color = 'black';
+}
+
+async function get_neighbourhood(installation_identifier) {
+    const response=await fetch('/map/get_neighbourhood/'+installation_identifier)
+    const data = await response.json()
+    names = data['neighbourhoods']
+    for (let i = 0;  i < names.length;i++) {
+        var name = names[i];
+        highlight_neighbourhood(name);
+    }
+
+    console.log(installation_identifier)
+    console.log(data)
 }
 
 async function add_figure(figure) {
@@ -125,7 +170,7 @@ async function add_figure(figure) {
 	//fetches the correct style and creates a popup and tooltip
 	//const response = await fetch('/media/'+figure.fields.geojson)
 	// console.log('json filename:',figure.fields.geojson)
-	const response = await fetch('/installations/geojson_file/'+figure.fields.geojson)
+	const response = await fetch('/map/geojson_file/'+figure.fields.geojson)
 	const data = await response.json()
 	// console.log(data, "data for figure")
 	if (data.file == false || data.json == false) {return;}
@@ -259,6 +304,8 @@ async function check_done_loading_neighbour(list,expected_n) {
 	}
 	show_layers_neighbour();
 }
+
+
 // add Neighbourhoods------------------------
 var Neighbourlayers = [];
 neighbourhoods = JSON.parse(document.getElementById('neighbourhoodsjs').textContent)
@@ -344,9 +391,15 @@ function setMapCenter(chosen) {
 			mapCenter = [cityjs[i].fields.latitude, cityjs[i].fields.longitude]
 			mymap.setView(mapCenter, 12);
 		}
+    highlight_city(chosen);
+    city = chosen;
 	}
 }
 //-----------------------
 //
 
+
+var city = JSON.parse(document.getElementById('cityjs').textContent)
+// heighlight_city(city);
+document.addEventListener('DOMContentLoaded',highlight_city(city))
 
