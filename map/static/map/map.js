@@ -10,6 +10,18 @@ function close_left_sidebar() {
 	document.getElementById("main").style.marginLeft = "0px";
 }
 
+// Js for sidebar
+function open_right_sidebar() {
+	document.getElementById("right_sidebar").style.width = "220px";
+	document.getElementById("main").style.marginRight= "220px";
+	document.getElementById("main").style.marginTop = "0px";
+}
+
+function close_right_sidebar() {
+	document.getElementById("right_sidebar").style.width = "0px";
+	document.getElementById("main").style.marginRight= "0px";
+}
+
 function toggleButton() {
 	if (!this.isToggled) {
 		openNav();
@@ -23,10 +35,12 @@ function toggleButton() {
 // Set view and zoom level for map
 // {#var selectedcity = document.getElementById("city-select");#}
 // {#console.log(selectedcity.value, "selected city")#}
-var mapCenter = [30.041394878798638,31.237350234985355]
-var mymap = L.map('map').setView(mapCenter, 12);
+var mapCenter = [30.041394878798638,31.307350234985355]
+var mymap = L.map('map').setView(mapCenter, 13);
 open_left_sidebar();
-console.log('opening nav');
+console.log('opening left');
+open_right_sidebar();
+console.log('opening right');
 
 // Define different tileLayer for map ---
 
@@ -110,10 +124,10 @@ async function add_figure(figure) {
 	//function loads the json figure connected to figure through ajax
 	//fetches the correct style and creates a popup and tooltip
 	//const response = await fetch('/media/'+figure.fields.geojson)
-	console.log('json filename:',figure.fields.geojson)
+	// console.log('json filename:',figure.fields.geojson)
 	const response = await fetch('/installations/geojson_file/'+figure.fields.geojson)
 	const data = await response.json()
-	console.log(data, "data for figure")
+	// console.log(data, "data for figure")
 	if (data.file == false || data.json == false) {return;}
 	style = make_style(figure);
 	var pop_up = make_pop_up(figure);
@@ -201,11 +215,11 @@ function make_pop_up_neighbour(neighbourhood) {
 async function add_neighbourhood(neighbourhood) {
 	//function loads the json figure connected to figure through ajax
 	//fetches the correct style and creates a popup and tooltip
-	console.log(neighbourhood.fields.extent_shapefile, 
-		"file address for neighbourhood")
+	// console.log(neighbourhood.fields.extent_shapefile, 
+		 // c"file address for neighbourhood")
 	const response = await fetch('/media/'+neighbourhood.fields.extent_shapefile)
 	const data = await response.json()
-	console.log(data, "data for neighbourhood")
+	// console.log(data, "data for neighbourhood")
 	if (neighbourhood.fields.style == null){
 		var style = {
 		"color": "#6BA884",
@@ -268,13 +282,13 @@ for (i = 0; i<figures.length; i++) {
 check_done_loading(Landlayers,figures.length);
 //-----------------------------------------
 // Multi slider for Date range
-var start = 1000;
-var end = 1400;
+var start = 500;
+var end = 1200;
 var multi_slider = document.getElementById('years');
 noUiSlider.create(multi_slider, {
 	start: [start, end],
 	connect: true,
-	range: {'min':000,'max':2000},
+	range: {'min':300,'max':1500},
 	steps: 50,
 	tooltips: true,
 	format: {to: function (value) {return Math.floor(value)},
@@ -289,7 +303,7 @@ function handleYearSlider(values) {
 	//figures are shown
 	start= values[0];
 	end= values[1];
-	console.log(values)
+	// console.log(values)
 	show_layers();
 }
 //----------------------------------------
