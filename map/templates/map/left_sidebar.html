@@ -1,10 +1,10 @@
 <div id="left_sidebar" class="sidebar">
 	<a href="javascript:void(0)" class="closebtn" 
 		onclick="close_left_sidebar()">×</a>
-	<div class="col-11 pt-0">
+	<div class="col-12 pt-0">
 		<p>Map opacity </p>
 		<div id="map_opacity"></div>
-		<p>Date range</p>
+		<p class="date-range">Date range</p>
 		<div id="years"></div>
 
 	<br>
@@ -17,6 +17,7 @@
 		<hr>
 		{% for watersystem in watersystemcategory.watersystems %}
 			<a href="javascript:void(0)"
+				class='watersystem-name'
 				id="{{watersystem}}"
 				onclick="">
 				{{watersystem.type}}
