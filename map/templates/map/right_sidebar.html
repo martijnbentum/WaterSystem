@@ -6,7 +6,8 @@
 		<a href="{% url installation.detail_url installation.pk %}"
 			class='installation-title'
 			id="{{installation.identifier}}"
-			onclick="">
+			onmouseover="get_neighbourhood('{{installation.identifier}}')"
+			onmouseout="turnoff_neighbourhoods()">
 			{{installation}}
 		</a>
 		<hr>
