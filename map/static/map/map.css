@@ -4,6 +4,10 @@
 }
 
 /* CSS for sidebar */
+.date-range {
+	padding-top:5px;
+	padding-bottom:10px;
+}
 
 .city-links {
     display: flex;
@@ -19,13 +23,24 @@
     margin:auto;
 }
 
+.city-divider {
+	color:lightgrey;
+    font-size:20px;
+}
+
+#left_sidebar {
+	left: 0;
+}
+#right_sidebar {
+	right: 0;
+}
+
 .sidebar {
 	height: 100%;
 	width: 0;
 	position: fixed;
 	z-index: 1;
 	top: 60px;
-	left: 0;
 	background-color: #eee;
 	overflow-x: hidden;
 	transition: 0.5s;
@@ -40,9 +55,18 @@
 .sidebar a {
 	display: block;
 	text-decoration: none;
-	font-size: 16px;
 	color: #818181;
 	transition: 0.3s;
+}
+
+.watersystem-name {
+	font-size: 14px;
+	margin-left:15px;
+}
+
+.installation-title {
+	font-size: 14px;
+	margin-left:20px;
 }
 
 .sidebar a:hover {
@@ -51,14 +75,22 @@
 
 .sidebar .closebtn {
 	position: absolute;
-	right: 5px;
+	right: 15px;
     top:0px;
 	font-size: 25px;
 	margin-left: 5px;
 }
+.sidebar .right-closebtn {
+	position: absolute;
+	left: 15px;
+    top:0px;
+	font-size: 25px;
+	margin-right: 5px;
+}
 
 #main {
 	transition: margin-left .5s;
+	transition: margin-right.5s;
 	padding: 0px;
     background-color:#eee;
 }
@@ -74,4 +106,58 @@
 		font-size: 18px;
 	}
 }
+
+
+/* no box around tooltip (numbers above the handles);
+ */
+.noUi-tooltip {
+  border: 0px;
+  padding: 0px;
+}
+
+/* style handles;
+ */
+.noUi-handle {
+    border: 1px solid black;
+    border-radius: 5px;
+    background: black;
+    box-shadow:none;
+	width: 15px !important;
+	height:15px !important;
+	right: -5px !important;
+	font-size: 11px;
+}
+/* make handel white on hover
+*/
+.noUi-handle:hover{
+	background:black;
+}
+
+/* Handle stripes;(remove them)
+ */
+.noUi-handle:before,
+.noUi-handle:after {
+  width: 0px;
+}
+
+/* remove blue outline on pressed handle
+ */
+.noUi-handle:focus {
+	outline:none;
+}
+
+.noUi-active {
+  box-shadow: none;
+}
+
+/* connect bar color  */
+.noUi-connect {
+	background:black;
+}
+
+.noUi-horizontal, .noUi-vertical {
+    background: lightgrey;
+	height:2px;
+	border:0px solid grey;
+ }
 
