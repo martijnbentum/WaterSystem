@@ -45,7 +45,7 @@ class Helper:
 	@property
 	def detail_url(self):
 		app_name, model_name = instance2names(self)
-		return app_name + ':' + model_name.lower()
+		return app_name + ':' + model_name.lower() + '-detail'
 
 	@property
 	def edit_url(self):
