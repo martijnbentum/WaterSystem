@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.core import serializers
 import json
 from utils import map_util
+from utils import model_util
 import os
 import sys
 from waterSystem import settings
@@ -11,7 +12,7 @@ from installations.models import Figure, Style, City, Neighbourhood
 from installations.models import Institution, Installation, WatersystemCategories
 
 # Map Visualization map MAP
-def MapVisualization(request):
+def MapVisualization(request, city = 'Cairo'):
     f = Figure.objects.all()
     f = serializers.serialize('json', f)
     f = json.loads(f)
@@ -29,7 +30,8 @@ def MapVisualization(request):
     watersystemcategories = WatersystemCategories.objects.all()
     context = {'page_name': 'Map', 'figures': f, 'styles': s, 
     'cities': cities, 'cjs':cjs, 'neighbourhoods':n,'cities':cities,
-    'installations':installations,'watersystemcategories':watersystemcategories}
+    'installations':installations,'watersystemcategories':watersystemcategories,
+    'city':city}
     return render(request, 'map/map.html', context)
 
 def geojson_file(request, filename):
@@ -44,3 +46,10 @@ def geojson_file(request, filename):
         return JsonResponse({'json': False})
     print('succesfully loaded:',filename,path)
     return JsonResponse(data)
+
+def get_neighbourhood(request, installation_identifier):
+    installation = model_util.identifier2instance(installation_identifier)
+    d = {'neighbourhoods':[n.name for n in installation.neighbourhoods]}
+    print(d)
+    return JsonResponse(d)
+
