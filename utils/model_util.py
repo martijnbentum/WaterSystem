@@ -1,6 +1,7 @@
 import random
 import string
 from django.core import serializers
+from django.apps import apps
 import json
 
 class info():
@@ -101,6 +102,10 @@ class Helper:
 	def has_exact_location(self):
 		return bool(self.extent_shapefile and self.latitude and self.longitude)
 
+	@property
+	def neighbourhoods(self):
+		return list(self.neighbourhood.all())
+
 
 
 def id_generator(id_type= 'letters', length = 9):
@@ -127,5 +132,17 @@ def model2json(model):
 	with open(filename,'w') as fout:
 		json.dump(o,fout)
 	return o
+
+def identifier2info(identifier):
+	app_name, model_name, pk = identifier.split('_')
+	values = [app_name, model_name, int(pk)]
+	keys = 'app_name,model_name,pk'.split(',') 
+	d = {key:value for key,value in zip(keys,values)}
+	return d
 	
-	
+def identifier2instance(identifier):	
+	d = identifier2info(identifier)
+	model = apps.get_model(d['app_name'],d['model_name'])
+	try: return model.objects.get(pk = d['pk'])
+	except: return None
+
