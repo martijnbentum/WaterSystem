@@ -11,9 +11,6 @@
 	<link rel="stylesheet"
 		href="{% static 'map/map.css' %}"
 	/>
-	<link rel="stylesheet"
-		href="{% static 'map/slider.css' %}"
-	/>
  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
    crossorigin=""></script>
@@ -33,6 +30,9 @@
                     onclick="setMapCenter('{{city}}')">
                         {{city}}
                 </a>
+				{% if not forloop.last %}
+					<span class="city-divider">|</span>
+				{% endif %}
             {% endfor %}
         </div>
 
@@ -42,9 +42,8 @@
         {{cjs|json_script:"cjsjs"}}
         {{neighbourhoods|json_script:"neighbourhoodsjs"}}
 
-        <div>
-        </div>
     </div>
+    {% include 'map/right_sidebar.html' %}
 
 <script 
     src="{% static 'map/map.js' %}">
