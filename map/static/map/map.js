@@ -260,9 +260,9 @@ function make_pop_up_neighbour(neighbourhood) {
 async function add_neighbourhood(neighbourhood) {
 	//function loads the json figure connected to figure through ajax
 	//fetches the correct style and creates a popup and tooltip
-	// console.log(neighbourhood.fields.extent_shapefile, 
-		 // c"file address for neighbourhood")
-	const response = await fetch('/media/'+neighbourhood.fields.extent_shapefile)
+	var path = neighbourhood.fields.extent_shapefile
+	const response = await fetch('/map/geojson_file/'+path)
+	// const response = await fetch('/media/'+neighbourhood.fields.extent_shapefile)
 	const data = await response.json()
 	// console.log(data, "data for neighbourhood")
 	if (neighbourhood.fields.style == null){
