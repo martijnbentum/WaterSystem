@@ -261,12 +261,20 @@ class Watersystem(models.Model):
             self.un_original_term = unidecode.unidecode(self.original_term)
         super(Watersystem, self).save()
 
-	@property
-	def installations(self):
-		if hasattr(self,'_installations'): return self._installations
-		self._installations = []
-		self._installations = list(self.installations.all())
-		return self._installations
+    @property
+    def installations(self):
+        if hasattr(self,'_installations'): return self._installations
+        self._installations = []
+        self._installations = list(self.installation_set.all())
+        return self._installations
+
+    @property
+    def installation_identifiers(self):
+        return ','.join([x.identifier for x in self.installations])
+
+    @property
+    def installation_count(self):
+        return len(self.installations)
 
 
 class WatersystemCategories(models.Model):
@@ -281,14 +289,21 @@ class WatersystemCategories(models.Model):
     def watersystems(self):
         return list(self.watersystem.all())
 
-	@property
-	def installations(self):
-		if hastattr(self,'_installations'):return self._installations
-		self._installations = []
-		for watersystem in self.watersystems:
-			self._installations.extend(watersystem.installations
-		return self._installations
-			
+    @property
+    def installations(self):
+        if hasattr(self,'_installations'):return self._installations
+        self._installations = []
+        for watersystem in self.watersystems:
+            self._installations.extend(watersystem.installations)
+        return self._installations
+            
+    @property
+    def installation_identifiers(self):
+        return ','.join([x.identifier for x in self.installations])
+
+    @property
+    def installation_count(self):
+        return len(self.installations)
 
 
 class Installation(models.Model, Helper):
