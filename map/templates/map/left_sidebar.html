@@ -11,16 +11,19 @@
 	{% for watersystemcategory in watersystemcategories %}
 		<a href="javascript:void(0)"
 			id="{{watersystemcategory}}"
+            data_installation_ids="{{watersystemcategory.installation_identifiers}}"
 			onclick="">
 			{{watersystemcategory}}
+                <small>({{watersystemcategory.installation_count}})</small>
 		</a>
 		<hr>
 		{% for watersystem in watersystemcategory.watersystems %}
 			<a href="javascript:void(0)"
 				class='watersystem-name'
 				id="{{watersystem}}"
+                data_installation_ids="{{watersystem.installation_identifiers}}"
 				onclick="">
-				{{watersystem.type}}
+				{{watersystem.type}} <small>({{watersystem.installation_count}})</small>
 			</a>
 		{% endfor %}
 		<br>
