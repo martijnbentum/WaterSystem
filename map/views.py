@@ -36,7 +36,6 @@ def MapVisualization(request, city = 'Cairo'):
 
 def geojson_file(request, filename):
     path = settings.MEDIA_DIR + '/shapefiles/'+filename
-    print('filename:',filename,'path:',path)
     if not os.path.isfile(path): 
         print('file not found',path,filename)
         return JsonResponse({'file': False})
