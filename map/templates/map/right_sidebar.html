@@ -3,14 +3,17 @@
 		onclick="close_right_sidebar()">×</a>
 	<br>
 	{% for installation in installations %}
-		<a href="{% url installation.detail_url installation.pk %}"
-			class='installation-title'
-			id="{{installation.identifier}}"
-			onmouseover="get_neighbourhood('{{installation.identifier}}')"
-			onmouseout="turnoff_neighbourhoods()">
-			{{installation}}
-		</a>
-		<hr>
+        <div class="installation-item" 
+            id="{{installation.identifier}}-item">
+            <a href="{% url installation.detail_url installation.pk %}"
+                class='installation-title'
+                id="{{installation.identifier}}"
+                onmouseover="get_neighbourhood('{{installation.identifier}}')"
+                onmouseout="turnoff_neighbourhoods()">
+                {{installation}}
+            </a>
+            <hr>
+        </div>
 	{% endfor %}
 	<br><br><br><br><br><br>
 	<br><br><br><br><br><br>
