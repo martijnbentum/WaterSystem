@@ -37,7 +37,11 @@ function toggleButton() {
 // {#console.log(selectedcity.value, "selected city")#}
 var mapCenter = [30.041394878798638,31.307350234985355]
 var mymap = L.map('map').setView(mapCenter, 13);
+var active_installation_ids= [];
+
+
 open_left_sidebar();
+
 console.log('opening left');
 open_right_sidebar();
 console.log('opening right');
@@ -85,6 +89,8 @@ mapbox.addTo(mymap)
 mapbox.setOpacity(40/100);
 
 //------------------------
+
+
 // functions to work with Json files on map for Figures
 function onEachFeature(feature,layer) {
 	//binds the pop up and tool tip to each feature
@@ -384,22 +390,55 @@ L.control.layers(baseMaps, overlayMaps).addTo(mymap);
 //-----------------------
 // City filter
 function setMapCenter(chosen) {
+    var e = document.getElementById(chosen);
+    active_installation_ids = e.getAttribute('data_installation_ids').split(',');
+    console.log(active_installation_ids,333);
 	cityjs = JSON.parse(document.getElementById('cjsjs').textContent)
 	for (i = 0; i<cityjs.length; i++) {
 	//Check which city is selected
 		if (cityjs[i].fields.name === chosen){
-			mapCenter = [cityjs[i].fields.latitude, cityjs[i].fields.longitude]
+			mapCenter = [cityjs[i].fields.latitude, cityjs[i].fields.longitude];
 			mymap.setView(mapCenter, 12);
 		}
+	}
     highlight_city(chosen);
     city = chosen;
-	}
+    hide_show_elements();
 }
 //-----------------------
 //
 
+function get_all_installation_ids() {
+    var installations = document.getElementsByClassName('installation-title');
+    var installation_ids = [];
+    for (i = 0; i < installations.length; i ++) {
+        var installation = installations[i]
+        installation_ids.push(installation.id);
+    }
+    return installation_ids
+}
+
+function hide_show_elements() {
+    _update_installations();
+}
+
+function _update_installations() {
+    for (let i= 0;i< installation_ids.length;i++) {
+        var identifier = installation_ids[i];
+        installation = document.getElementById(identifier+'-item');
+        console.log(identifier, installation)
+        if (active_installation_ids.includes(identifier)) {
+            installation.style.display = '';
+        } else {
+            installation.style.display = "none";
+        }
+    }
+}
+
 
 var city = JSON.parse(document.getElementById('cityjs').textContent)
 // heighlight_city(city);
-document.addEventListener('DOMContentLoaded',highlight_city(city))
+var installation_ids = get_all_installation_ids();
+// document.addEventListener('DOMContentLoaded',highlight_city(city))
+setMapCenter(city);
 
