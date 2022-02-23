@@ -433,7 +433,8 @@ def make_tabs(tab_type, focus=0, focus_names=''):
 
 
 def generate_num(app_name, model_name):
-    """Function to get the next ID(pk) to generate automated names in form initialization"""
+    """Function to get the next ID(pk) to generate automated 
+	names in form initialization"""
     model = apps.get_model(app_name, model_name)
 
     if not model.objects.exists():
