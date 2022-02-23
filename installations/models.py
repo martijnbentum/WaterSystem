@@ -36,6 +36,14 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def installations(self):
+        return [installation for installation in self.installation_set.all()]
+
+    @property
+    def installation_identifiers(self):
+        return ','.join([x.identifier for x in self.installations])
+
 
 class Style(models.Model):
     name = models.CharField(max_length=200)
