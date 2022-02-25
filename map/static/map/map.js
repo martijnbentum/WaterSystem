@@ -154,7 +154,7 @@ function turnoff_cities() {
 function highlight_city(name) {
     turnoff_cities();
     var e = document.getElementById(name);
-    console.log(e);
+    //console.log(e);
     e.style.color = 'black';
 }
 
@@ -167,8 +167,8 @@ async function get_neighbourhood(installation_identifier) {
         highlight_neighbourhood(name);
     }
 
-    console.log(installation_identifier)
-    console.log(data)
+    //console.log(installation_identifier)
+    //console.log(data)
 }
 
 async function add_figure(figure) {
@@ -392,7 +392,6 @@ L.control.layers(baseMaps, overlayMaps).addTo(mymap);
 function setMapCenter(chosen) {
     var e = document.getElementById(chosen);
     active_installation_ids = e.getAttribute('data_installation_ids').split(',');
-    console.log(active_installation_ids,333);
 	cityjs = JSON.parse(document.getElementById('cjsjs').textContent)
 	for (i = 0; i<cityjs.length; i++) {
 	//Check which city is selected
@@ -426,14 +425,53 @@ function _update_installations() {
     for (let i= 0;i< installation_ids.length;i++) {
         var identifier = installation_ids[i];
         installation = document.getElementById(identifier+'-item');
-        console.log(identifier, installation)
         if (active_installation_ids.includes(identifier)) {
             installation.style.display = '';
         } else {
             installation.style.display = "none";
         }
     }
+	update_filter_counts();
 }
+
+function count_active_installation_ids(installation_ids) {
+	count = 0;
+	console.log(installation_ids,'filter ids')
+	console.log(active_installation_ids,'active ids')
+    for (let i= 0;i< installation_ids.length;i++) {
+        var identifier= installation_ids[i];
+		if ( active_installation_ids.includes(identifier) ) {
+			count ++
+		}
+	}
+	return count
+}
+
+function update_filter_counts() {
+	var filters = document.getElementsByClassName('filter-count');
+    for (let i= 0;i< filters.length;i++) {
+        var filter = filters[i];
+		console.log(filter);
+		var installation_ids = filter.getAttribute('data_installation_ids').split(',');
+		var count = count_active_installation_ids(installation_ids);
+		if ( count == 0 ) {
+			filter.style.display = "none";
+		 	if ( [...filter.classList].includes('watersystemcategory') ) {
+				var div= document.getElementById(filter.id + '-all');
+				div.style.display = "none";
+			}
+		} else {
+			filter.style.display = "";
+			var html =filter.innerHTML.split('(')[0] + '(' + count + ') </small>';
+			filter.innerHTML= html;
+		 	if ( [...filter.classList].includes('watersystemcategory') ) {
+				var div = document.getElementById(filter.id + '-all');
+				div.style.display = "";
+			}
+		}
+	}
+}
+
 
 
 var city = JSON.parse(document.getElementById('cityjs').textContent)
