@@ -270,6 +270,10 @@ class Watersystem(models.Model):
         super(Watersystem, self).save()
 
     @property
+    def name(self):
+        return self.__str__()
+
+    @property
     def installations(self):
         if hasattr(self,'_installations'): return self._installations
         self._installations = []
@@ -295,7 +299,13 @@ class WatersystemCategories(models.Model):
 
     @property
     def watersystems(self):
-        return list(self.watersystem.all())
+        if hasattr(self,'_watersystems'): return self._watersystems
+        self._watersystems = list(self.watersystem.all())
+        return self._watersystems
+
+    @property
+    def watersystem_names(self):
+        return ','.join([x.name for x in self.watersystems])
 
     @property
     def installations(self):
