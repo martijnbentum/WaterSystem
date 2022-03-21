@@ -28,10 +28,11 @@ def MapVisualization(request, city = 'Cairo'):
     n = json.loads(n)
     installations = Installation.objects.all()
     watersystemcategories = WatersystemCategories.objects.all()
+    filters = map_util.Filters().to_dict()
     context = {'page_name': 'Map', 'figures': f, 'styles': s, 
     'cities': cities, 'cjs':cjs, 'neighbourhoods':n,'cities':cities,
     'installations':installations,'watersystemcategories':watersystemcategories,
-    'city':city}
+    'city':city,'filters':filters}
     return render(request, 'map/map.html', context)
 
 def geojson_file(request, filename):
