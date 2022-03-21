@@ -14,7 +14,8 @@
 				class='filter-count watersystemcategory'
 				id="{{watersystemcategory}}"
 				data_installation_ids="{{watersystemcategory.installation_identifiers}}"
-				onclick="">
+				data_filter_ids="{{watersystemcategory.watersystem_names}}"
+				onclick="toggle_category_filter('{{watersystemcategory}}')">
 				{{watersystemcategory}}
 					<small>({{watersystemcategory.installation_count}})</small>
 			</a>
@@ -24,7 +25,7 @@
 					class='watersystem-name filter-count'
 					id="{{watersystem}}"
 					data_installation_ids="{{watersystem.installation_identifiers}}"
-					onclick="">
+					onclick="toggle_filter('{{watersystem}}')">
 					{{watersystem.type}} 
 					<small>({{watersystem.installation_count}})</small>
 				</a>
