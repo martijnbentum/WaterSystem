@@ -308,6 +308,10 @@ class WatersystemCategories(models.Model):
         return ','.join([x.name for x in self.watersystems])
 
     @property
+    def watersystem_types(self):
+        return ','.join([x.type for x in self.watersystems])
+
+    @property
     def installations(self):
         if hasattr(self,'_installations'):return self._installations
         self._installations = []
