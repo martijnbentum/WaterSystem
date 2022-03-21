@@ -1,3 +1,4 @@
+
 <div id="left_sidebar" class="sidebar">
 	<a href="javascript:void(0)" class="closebtn" 
 		onclick="close_left_sidebar()">×</a>
@@ -8,26 +9,26 @@
 		<div id="years"></div>
 
 	<br>
-	{% for watersystemcategory in watersystemcategories %}
-		<div id="{{watersystemcategory}}-all">
+	{% for category_filter in filters.category_filters %}
+		<div id="{{category_filter.name}}-all">
 			<a href="javascript:void(0)"
 				class='filter-count watersystemcategory'
-				id="{{watersystemcategory}}"
-				data_installation_ids="{{watersystemcategory.installation_identifiers}}"
-				data_filter_ids="{{watersystemcategory.watersystem_names}}"
-				onclick="toggle_category_filter('{{watersystemcategory}}')">
-				{{watersystemcategory}}
-					<small>({{watersystemcategory.installation_count}})</small>
+				id="{{category_filter.name}}"
+				data_installation_ids="{{category_filter.installation_ids_str}}"
+				data_filter_ids="{{category_filter.filter_names}}"
+				onclick="toggle_category_filter('{{category_filter.name}}')">
+				{{category_filter.name}}
+					<small>({{category_filter.ninstallations}})</small>
 			</a>
 			<hr>
-			{% for watersystem in watersystemcategory.watersystems %}
+			{% for f in category_filter.filters %}
 				<a href="javascript:void(0)"
 					class='watersystem-name filter-count'
-					id="{{watersystem}}"
-					data_installation_ids="{{watersystem.installation_identifiers}}"
-					onclick="toggle_filter('{{watersystem}}')">
-					{{watersystem.type}} 
-					<small>({{watersystem.installation_count}})</small>
+					id="{{f.name}}"
+					data_installation_ids="{{f.installation_ids_str}}"
+					onclick="toggle_filter('{{f.name}}')">
+					{{f.name}} 
+					<small>({{f.ninstallations}})</small>
 				</a>
 			{% endfor %}
 			<br>
