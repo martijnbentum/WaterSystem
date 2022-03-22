@@ -92,7 +92,6 @@ function onEachFeature(feature,layer) {
 
 }
 
-
 function make_pop_up(figure) {
 	//create a pop up based on the figure information
 	[app_name,model_name] = figure.model.split('.')
@@ -129,7 +128,7 @@ async function add_figure(figure) {
 	add_popup_and_tooltip(data,pop_up,figure.fields.name)
 	// {#L.geoJSON(data).addTo(mymap)#}
 	var geosjson_layer = L.geoJSON(data,{style:style,onEachFeature:onEachFeature})
-	Landlayers.push({'figure':figure,'layer':geosjson_layer,'style':style})
+	figure_layers.push({'figure':figure,'layer':geosjson_layer,'style':style})
 }
 
 // neighbourhoods
@@ -141,26 +140,26 @@ function turnoff_neighbourhoods() {
     }
 }
 
-function highlight_neighbourhood(name) {
-    turnoff_neighbourhoods();
+function highlight_neighbourhood(pk) {
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
-        if (n.neighbourhood.fields.name == name) {
+		console.log(n,n.neighbourhood,n.neighbourhood.pk,pk,'nnnn')
+        if (n.neighbourhood.pk == pk) {
             n.layer.setStyle({fillOpacity:0.3});
         }
     }
 }
 
-async function get_neighbourhood(installation_identifier) {
+function turnon_neighbourhood(data) {
 	//heighlights neighbourhood on installation hover
-    const response=await fetch('/map/get_neighbourhood/'+installation_identifier)
-    const data = await response.json()
-    names = data['neighbourhoods']
-    for (let i = 0;  i < names.length;i++) {
-        var name = names[i];
-        highlight_neighbourhood(name);
+    // turnoff_neighbourhoods();
+    var d = data['neighbourhoods']
+    for (let i = 0;  i < d.length;i++) {
+        var pk = d[i].pk;
+        highlight_neighbourhood(pk);
     }
 }
+
 
 async function add_neighbourhood(neighbourhood) {
 	//function loads the json figure connected to figure through ajax
@@ -298,9 +297,9 @@ function make_style(figure){
 
 function show_layers(){
 	//show the figures in the order of the z index
-	Landlayers.sort((a,b) => a.style.z_index - b.style.z_index)
-	for (i = 0; i<Landlayers.length; i++) {
-		layer = Landlayers[i];
+	figure_layers.sort((a,b) => a.style.z_index - b.style.z_index)
+	for (i = 0; i<figure_layers.length; i++) {
+		layer = figure_layers[i];
 		//check whether a figure overlaps with the current time range 
 		//and only plot those that do
 		overlap = check_overlap(layer.figure.fields.start_date, 
@@ -321,7 +320,7 @@ async function check_done_loading(list,expected_n) {
 
 //------------------------------------
 //add Figures-------------------------------
-var Landlayers = [];
+var figure_layers= [];
 styles = JSON.parse(document.getElementById('stylesjs').textContent)
 figures = JSON.parse(document.getElementById('figuresjs').textContent)
 
@@ -330,7 +329,7 @@ for (i = 0; i<figures.length; i++) {
 	add_figure(figures[i]);
 }
 
-check_done_loading(Landlayers,figures.length);
+check_done_loading(figure_layers,figures.length);
 //-----------------------------------------
 
 // date slider
@@ -629,10 +628,45 @@ function toggle_category_filter(category_filter_id) {
 	}
 }
 
+function turnoff_figure() {
+    for (let i = 0;  i < figure_layers.length;i++) {
+        var figure_layer = figure_layers[i];
+        figure_layer.layer.setStyle({color: figure_layer.style.color,
+			weight: figure_layer.style.weight});
+    }
+}
+
+function highlight_figure(figure) {
+    for (let i = 0;  i < figure_layers.length;i++) {
+        var figure_layer = figure_layers[i];
+		console.log(figure_layer.figure.pk,figure,'figure')
+        if (figure_layer.figure.pk == figure.pk) {
+            figure_layer.layer.setStyle({color: '#f01d94',
+            	weight: figure_layer.style.weight *2});
+        }
+    }
+}
+
+function turnon_figure(data) {
+	//heighlights figure on installation hover
+    var figure = data['figure']
+	if (figure) { highlight_figure(figure) }
+}
+
+
+async function turnon_map_repr(installation_identifier) {
+    const response=await fetch('/map/get_map_representation/'+installation_identifier)
+    const data = await response.json()
+	turnon_neighbourhood(data);
+	turnon_figure(data)
+}
+
+function turnoff_map_repr() {
+	turnoff_neighbourhoods();
+	turnoff_figure();
+}
 
 var city = JSON.parse(document.getElementById('cityjs').textContent)
-// heighlight_city(city);
 var installation_ids = get_all_installation_ids();
-// document.addEventListener('DOMContentLoaded',highlight_city(city))
 setMapCenter(city);
 
