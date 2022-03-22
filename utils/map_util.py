@@ -92,11 +92,13 @@ class Filters():
 	def to_dict(self):
 		d = {'filters':[],'category_filters':[],'installation_ids':self.installation_ids}
 		d['filter_dict'] = {}
+		d['category_filter_dict'] = {}
 		d['city2installations'] = self.city2installation_ids_dict
 		d['installations2city'] = self.installation_ids2city_dict
 		for cf in self.category_filters:
 			cfd = cf.to_dict()
 			d['category_filters'].append(cfd)
+			d['category_filter_dict'][cf.name] = cfd
 			d['filters'].extend(cfd['filters'])
 		for f in self.filters:
 			d['filter_dict'][f.name] = f.to_dict()
@@ -145,8 +147,11 @@ class CategoryFilter():
 		d['installation_ids_str'] = ','.join(self.installation_ids)
 		d['filters'] = []
 		d['active'] =True
+		d['filter_dict'] = {}
 		for f in self.filters:
-			d['filters'].append( f.to_dict() )
+			fd = f.to_dict()
+			d['filters'].append(fd)
+			d['filter_dict'][f.name] = fd
 		return d
 
 	def to_json(self):
