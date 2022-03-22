@@ -48,9 +48,15 @@ def geojson_file(request, filename):
     print('succesfully loaded:',filename,path)
     return JsonResponse(data)
 
-def get_neighbourhood(request, installation_identifier):
+def get_map_representation(request, installation_identifier):
     installation = model_util.identifier2instance(installation_identifier)
-    d = {'neighbourhoods':[n.name for n in installation.neighbourhoods]}
-    print(d)
+    d = {'neighbourhoods':[n.to_dict() for n in installation.neighbourhoods]}
+    if installation.figure:
+        d['figure'] = installation.figure.to_dict()
+    else: d['figure'] = None
+    d['latitude'] = installation.latitude 
+    d['longitude'] = installation.longitude
     return JsonResponse(d)
+
+
 
