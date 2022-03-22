@@ -8,6 +8,10 @@ var active_filters = [];
 var active_category_filters = [];
 var filters = JSON.parse(document.getElementById('filtersjs').textContent)
 
+var neighbourhood_style = {"color": "#9AD076","weight": 3,"opacity": 0.8,
+	"fillOpacity": 0,"z_index": 0};
+neighbourhood_style ={...neighbourhood_style,...{"dashArray": '20, 20'}}
+
 
 // Js for sidebar
 function open_left_sidebar() {
@@ -85,7 +89,9 @@ function onEachFeature(feature,layer) {
 	if (!layer.feature.tool_tip.toLowerCase().includes('district')) {
 	layer.bindTooltip(feature.tool_tip);
 	}
+
 }
+
 
 function make_pop_up(figure) {
 	//create a pop up based on the figure information
@@ -140,7 +146,7 @@ function highlight_neighbourhood(name) {
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
         if (n.neighbourhood.fields.name == name) {
-            n.layer.setStyle({fillOpacity:0.5});
+            n.layer.setStyle({fillOpacity:0.3});
         }
     }
 }
@@ -163,19 +169,8 @@ async function add_neighbourhood(neighbourhood) {
 	const response = await fetch('/map/geojson_file/'+path)
 	// const response = await fetch('/media/'+neighbourhood.fields.extent_shapefile)
 	const data = await response.json()
-	if (neighbourhood.fields.style == null){
-		var style = {
-		"color": "#6BA884",
-		"weight": 3,
-		"opacity": 0.8,
-		"fillOpacity": 0,
-		"z_index": 0
-		};
-		style ={...style,...{"dashArray": '20, 20'}}
-	}
-	else{
-		style = make_style(neighbourhood);
-	}
+	if (neighbourhood.fields.style == null){ style = neighbourhood_style; }  
+	else {style = make_style(neighbourhood);}
 	var pop_up = make_pop_up_neighbour(neighbourhood);
 	var tooltip_str = 'Neighbourhood '
 	tooltip_str += neighbourhood.fields.neighbourhood_number.toString();
