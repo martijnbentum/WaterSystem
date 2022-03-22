@@ -94,7 +94,44 @@ class Figure(models.Model):
         d = {}
         d['name'] = self.name
         d['pk'] = self.pk
+        d['style'] = self.style.pk if self.style else None
+        d['city'] = self.city.pk if self.city else None
+        d['installation_ids'] = self.installation_ids
+        d['map_start_date'] = self.map_start_date
+        d['map_end_date'] = self.map_end_date
+        d['geojson'] = self.geojson.name if self.geojson else None
+        d['discription'] = self.map_description
         return d
+
+    @property
+    def installations(self):
+        if hasattr(self,'_installations'): return self._installations
+        installations = self.installation_set.all()
+        self._installations = installations if installations else None
+        return self._installations
+
+    @property
+    def installation_ids(self):
+        if self.installations: return [x.identifier for x in self.installations]
+        return None
+
+    @property
+    def map_start_date(self):
+        if not self.installations: 
+            if self.start_date: return self.start_date.year
+            return None
+        if len(self.installations) > 1:
+            return min([x.map_start_date for x in self.installations])
+        return self.installations[0].map_start_date 
+
+    @property
+    def map_end_date(self):
+        if not self.installations: 
+            if self.end_date: return self.end_date.year
+            return None
+        if len(self.installations) > 1:
+            return min([x.map_end_date for x in self.installations])
+        return self.installations[0].map_end_date   
 
 class Religion(models.Model):
     name = models.CharField(max_length=100, blank=False)
@@ -373,16 +410,16 @@ class Installation(models.Model, Helper):
 
     @property
     def map_start_date(self):
-        if self.construction_date_lower: return self.construction_date_lower
-        elif self.construction_date_upper: return self.construction_date_upper
-        elif self.first_reference_lower: return self.first_reference_lower
-        elif self.first_reference_upper: return self.first_reference_upper
+        if self.construction_date_lower: return self.construction_date_lower.year
+        elif self.construction_date_upper: return self.construction_date_upper.year
+        elif self.first_reference_lower: return self.first_reference_lower.year
+        elif self.first_reference_upper: return self.first_reference_upper.year
         return None
 
     @property
     def map_end_date(self):
-        if self.end_functioning_year_upper: return self.end_functioning_year_upper
-        if self.end_functioning_year_lower: return self.end_functioning_year_lower
+        if self.end_functioning_year_upper: return self.end_functioning_year_upper.year
+        if self.end_functioning_year_lower: return self.end_functioning_year_lower.year
         return None
         
 
