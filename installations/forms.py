@@ -44,6 +44,9 @@ class NeighbourhoodWidget2(s2forms.ModelSelect2Widget):  # this is for o
         'city__name__icontains',
     ]
 
+class FigureWidget(s2forms.ModelSelect2Widget):
+    search_fields = ['name__icontains']
+
 class ReligionWidget(s2forms.ModelSelect2Widget):
     search_fields = ['name__icontains']
 
@@ -299,7 +302,7 @@ class InstallationForm(ModelForm):
         widget=WatersystemWidget(
             attrs={'data-placeholder': 'Select a water system',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}),
+                   'data-minimum-input-length': '0'}),
         required=False)
     alb, aub = attrs_lower_bound, attrs_upper_bound
     construction_date_lower = forms.CharField(widget=forms.TextInput(attrs=alb))
@@ -315,20 +318,20 @@ class InstallationForm(ModelForm):
         widget=PurposeWidget(
             attrs={'data-placeholder': 'Select purposes',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}),
+                   'data-minimum-input-length': '0'}),
         required=False)
     city = forms.ModelChoiceField(
         queryset=City.objects.all(),
         widget=CityWidget(
             attrs={'data-placeholder': 'Select city',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     neighbourhood = forms.ModelMultipleChoiceField(
         queryset=Neighbourhood.objects.all(),
         widget=NeighbourhoodWidget(
             attrs={'data-placeholder': 'Select neighbourhood',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     latitude = forms.DecimalField(max_digits=8, decimal_places=5,
         widget=forms.NumberInput(attrs={'placeholder': 'Latitude'}))
     longitude = forms.DecimalField(max_digits=8, decimal_places=5,
@@ -338,14 +341,20 @@ class InstallationForm(ModelForm):
         widget=InstitutionWidget(
             attrs={'data-placeholder': 'Select institution as location ',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
-    extent_shapefile = forms.FileField(widget=forms.ClearableFileInput)
+                   'data-minimum-input-length': '0'}))
+    # extent_shapefile = forms.FileField(widget=forms.ClearableFileInput)
+    figure= forms.ModelChoiceField(
+        queryset=Figure.objects.all(),
+        widget=FigureWidget(
+            attrs={'data-placeholder': 'Select figure',
+                   'style': 'width:100%;', 'class': 'searching',
+                   'data-minimum-input-length': '0'}))
     secondary_literature = forms.ModelMultipleChoiceField(
         queryset=SecondaryLiterature.objects.all(),
         widget=SecondaryLiteratureWidgetMulti(
             attrs={'data-placeholder': 'Select secondary literature',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     comment = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 3}),
         required=False)
@@ -371,7 +380,8 @@ class InstallationForm(ModelForm):
         self.fields['latitude'].required = False
         self.fields['longitude'].required = False
         self.fields['institution_as_location'].required = False
-        self.fields['extent_shapefile'].required = False
+        # self.fields['extent_shapefile'].required = False
+        self.fields['figure'].required = False
         self.fields['secondary_literature'].required = False
         self.fields['comment'].required = False
         self.fields['status'].required = False
