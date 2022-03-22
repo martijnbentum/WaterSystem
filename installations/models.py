@@ -371,6 +371,22 @@ class Installation(models.Model, Helper):
             self.un_comment = unidecode.unidecode(self.comment)
         super(Installation, self).save()
 
+    @property
+    def map_start_date(self):
+        if self.construction_date_lower: return self.construction_date_lower
+        elif self.construction_date_upper: return self.construction_date_upper
+        elif self.first_reference_lower: return self.first_reference_lower
+        elif self.first_reference_upper: return self.first_reference_upper
+        return None
+
+    @property
+    def map_end_date(self):
+        if self.end_functioning_year_upper: return self.end_functioning_year_upper
+        if self.end_functioning_year_lower: return self.end_functioning_year_lower
+        return None
+        
+
+
 
 
 # Relations
