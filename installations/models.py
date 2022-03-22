@@ -8,15 +8,6 @@ from colorfield.fields import ColorField
 from utils.model_util import Helper
 
 
-# Notes
-# 1) you can add help text for each field using :e.g. help_text='City name!'.
-# 2) on_delete= models.CASCADE: When the referenced object is deleted, 
-# also delete the objects that have references
-#    to it. (When you remove a Country for instance, 
-# you might want to delete Cities as well).
-
-# Create your models here.
-
 # User model
 class UserProfileInfo(models.Model):
     # Create relationship (don't inherit from User!)
@@ -124,7 +115,7 @@ class Evidence(models.Model):
     date_lower = PartialDateField(blank=True, null=True)
     date_upper = PartialDateField(blank=True, null=True)
     secondary_literature = models.ForeignKey(SecondaryLiterature, 
-        on_delete=models.CASCADE, blank=True, default='',null=True)
+        on_delete=models.SET_NULL, blank=True, default='',null=True)
     description = models.TextField(max_length=1000, blank=True, default='', null=True)
     status = models.BooleanField("Completed", default=False, blank=True)
     # searchable fields for fields with diacritics  (un: unaccent)
@@ -161,7 +152,7 @@ class Person(models.Model):
     # Role field for person and type of involvement field for 
     # person-installation relation
     role = models.CharField(max_length=100, blank=True)  
-    religion = models.ForeignKey(Religion, on_delete=models.CASCADE, 
+    religion = models.ForeignKey(Religion, on_delete=models.SET_NULL, 
         blank=True, default='', null=True)
     secondary_literature = models.ManyToManyField(SecondaryLiterature, blank=True)
     comment = models.TextField(max_length=1000, blank=True, default='', null=True)
@@ -207,14 +198,14 @@ class Purpose(models.Model):
 
 class Institution(models.Model):
     name = models.CharField(max_length=100, blank=False)
-    type = models.ForeignKey(InstitutionType, on_delete=models.CASCADE, 
+    type = models.ForeignKey(InstitutionType, on_delete=models.SET_NULL, 
         blank=True, null=True)  # this will not be
     # used in the future. I didn't delete this because there is data saved 
     # for some entries on the database.
     type_many = models.ManyToManyField(InstitutionType, related_name='installations', 
         blank=True, default='')
     purpose = models.ManyToManyField(Purpose, blank=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, blank=True, null=True)
     neighbourhood = models.ManyToManyField(Neighbourhood, blank=True)
     latitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, 
         null=True, default=0)
@@ -227,7 +218,7 @@ class Institution(models.Model):
     first_reference_upper = PartialDateField(blank=True, null=True)
     end_date_lower = PartialDateField(blank=True, null=True)
     end_date_upper = PartialDateField(blank=True, null=True)
-    religion = models.ForeignKey(Religion, on_delete=models.CASCADE, 
+    religion = models.ForeignKey(Religion, on_delete=models.SET_NULL, 
         blank=True, null=True)
     secondary_literature = models.ManyToManyField(SecondaryLiterature, blank=True)
     comment = models.TextField(max_length=1000, blank=True, default='', null=True)
@@ -251,7 +242,7 @@ class Watersystem(models.Model):
     type = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(max_length=1000, blank=True, null=True)
     secondary_literature = models.ForeignKey(SecondaryLiterature, 
-        on_delete=models.CASCADE, blank=True, default='',
+        on_delete=models.SET_NULL, blank=True, default='',
                                              null=True)
     # searchable fields for fields with diacritics  (un: unaccent)
     un_original_term = models.CharField(max_length=100, blank=True,
@@ -330,7 +321,7 @@ class WatersystemCategories(models.Model):
 
 class Installation(models.Model, Helper):
     name = models.CharField(max_length=250, blank=True, default='')
-    watersystem = models.ForeignKey(Watersystem, on_delete=models.CASCADE, 
+    watersystem = models.ForeignKey(Watersystem, on_delete=models.SET_NULL, 
         blank=True, null=True)
     construction_date_lower = PartialDateField(blank=True, null=True)
     construction_date_upper = PartialDateField(blank=True, null=True)
@@ -339,16 +330,17 @@ class Installation(models.Model, Helper):
     end_functioning_year_lower = PartialDateField(blank=True, null=True)
     end_functioning_year_upper = PartialDateField(blank=True, null=True)
     purpose = models.ManyToManyField(Purpose, blank=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, blank=True, null=True)
     neighbourhood = models.ManyToManyField(Neighbourhood, blank=True)
     latitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, 
         null=True, default=0)
     longitude = models.DecimalField(max_digits=8, decimal_places=5, blank=True, 
         null=True, default=0)
-    institution_as_location = models.ForeignKey(Institution, on_delete=models.CASCADE,
+    institution_as_location = models.ForeignKey(Institution, on_delete=models.SET_NULL,
         blank=True, null=True)
     extent_shapefile = models.FileField(upload_to='shapefiles/', max_length=50, 
         null=True,blank=True)
+    figure = models.ForeignKey(Figure, on_delete = models.SET_NULL, blank=True,null=True)
     secondary_literature = models.ManyToManyField(SecondaryLiterature, blank=True)
     comment = models.TextField(max_length=1000, blank=True, default='', null=True)
     status = models.BooleanField("Completed", default=False, blank=True, 
