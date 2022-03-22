@@ -66,6 +66,11 @@ class Neighbourhood(models.Model):
         self.name = self.__str__()
         super(Neighbourhood,self).save(*args,**kwargs)
     
+    def to_dict(self):
+        d = {}
+        d['name'] = self.name
+        d['pk'] = self.pk
+        return d
 
 class Figure(models.Model):
     '''figure to be plotted on a map.'''
@@ -85,6 +90,11 @@ class Figure(models.Model):
     def __str__(self):
         return self.name
 
+    def to_dict(self):
+        d = {}
+        d['name'] = self.name
+        d['pk'] = self.pk
+        return d
 
 class Religion(models.Model):
     name = models.CharField(max_length=100, blank=False)
