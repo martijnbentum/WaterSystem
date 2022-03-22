@@ -82,6 +82,9 @@ class Figure(models.Model):
     description = models.CharField(max_length=1000, blank=True, default='', null=True)
 # Landmarks
 
+    def __str__(self):
+        return self.name
+
 
 class Religion(models.Model):
     name = models.CharField(max_length=100, blank=False)
