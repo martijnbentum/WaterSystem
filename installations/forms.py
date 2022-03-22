@@ -160,34 +160,34 @@ class InstitutionForm(ModelForm):
         widget=InstitutionTypeWidget(
             attrs={'data-placeholder': 'Select institution type',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}),
+                   'data-minimum-input-length': '0'}),
         required=False)
     type_many = forms.ModelMultipleChoiceField(
         queryset=InstitutionType.objects.all(),
         widget=InstitutionTypeWidgetMulti(
             attrs={'data-placeholder': 'Select institution type',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}),
+                   'data-minimum-input-length': '0'}),
         required=False)
     purpose = forms.ModelMultipleChoiceField(
         queryset=Purpose.objects.all(),
         widget=PurposeWidget(
             attrs={'data-placeholder': 'Select purposes',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}),
+                   'data-minimum-input-length': '0'}),
         required=False)
     city = forms.ModelChoiceField(
         queryset=City.objects.all(),
         widget=CityWidget(
             attrs={'data-placeholder': 'Select city',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     neighbourhood = forms.ModelMultipleChoiceField(
         queryset=Neighbourhood.objects.all(),
         widget=NeighbourhoodWidget(
             attrs={'data-placeholder': 'Select neighbourhood',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     latitude = forms.DecimalField(max_digits=8, decimal_places=5,
         widget=forms.NumberInput(attrs={'placeholder': 'Latitude'}))
     longitude = forms.DecimalField(max_digits=8, decimal_places=5,
@@ -205,13 +205,13 @@ class InstitutionForm(ModelForm):
         widget=ReligionWidget(
             attrs={'data-placeholder': 'Select religion',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     secondary_literature = forms.ModelMultipleChoiceField(
         queryset=SecondaryLiterature.objects.all(),
         widget=SecondaryLiteratureWidgetMulti(
             attrs={'data-placeholder': 'Select secondary literature',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     comment = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 3}),
         required=False)
@@ -248,11 +248,11 @@ class PersonForm(ModelForm):
         widgets = {
             "religion": ReligionWidget(
                 attrs={'data-placeholder': 'Select religion','style': 'width:100%;',
-                    'class': 'searching','data-minimum-input-length': '1'}),
+                    'class': 'searching','data-minimum-input-length': '0'}),
                                   
             "evidence": EvidenceWidget(
                 attrs={'data-placeholder': 'Select evidence','style': 'width:100%;',
-                    'class': 'searching','data-minimum-input-length': '1'}),
+                    'class': 'searching','data-minimum-input-length': '0'}),
         }
     birth_lower = forms.CharField(widget=forms.TextInput(attrs=attrs_lower_bound))
     birth_upper = forms.CharField(widget=forms.TextInput(attrs=attrs_upper_bound))
@@ -263,7 +263,7 @@ class PersonForm(ModelForm):
         widget=SecondaryLiteratureWidgetMulti(
             attrs={'data-placeholder': 'Select secondary literature',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     comment = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 3}),
         required=False)
@@ -401,7 +401,7 @@ class EvidenceForm(ModelForm):
         widget=SecondaryLiteratureWidget(
             attrs={'data-placeholder': 'Select secondary literature',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}),
+                   'data-minimum-input-length': '0'}),
         required=False)
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 3}),
@@ -429,7 +429,7 @@ class FigureForm(ModelForm):
         widget=StyleWidget(
             attrs={'data-placeholder': 'Select style',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     start_date=forms.CharField(widget=forms.TextInput(
         attrs={'placeholder': 'start date'}))
     end_date = forms.CharField(widget=forms.TextInput(
@@ -439,13 +439,13 @@ class FigureForm(ModelForm):
         widget=NeighbourhoodWidget(
             attrs={'data-placeholder': 'Select neighbourhood',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     city = forms.ModelChoiceField(
         queryset=City.objects.all(),
         widget=CityWidget(
             attrs={'data-placeholder': 'Select city',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 4}))
@@ -474,7 +474,7 @@ class WatersystemForm(ModelForm):
         widget=SecondaryLiteratureWidget(
             attrs={'data-placeholder': 'Select secondary literature',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     class Meta:
         model = Watersystem
@@ -493,7 +493,7 @@ class WatersystemCategoriesForm(ModelForm):
         widget=WatersystemWidgetMulti(
             attrs={'data-placeholder': 'Select water systems',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 3}),
         required=False)
@@ -517,7 +517,7 @@ class NeighbourhoodForms(ModelForm):
         widget=StyleWidget(
             attrs={'data-placeholder': 'Select style',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     class Meta:
         model = Neighbourhood
@@ -543,7 +543,7 @@ class CityPersonRelationForm(ModelForm):
         widget=CityWidget(
             attrs={'data-placeholder': 'Select city',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     class Meta:
         model = CityPersonRelation
@@ -559,14 +559,14 @@ class NeighbourhoodPersonRelationForm(ModelForm):
         widget=PersonWidget(
             attrs={'data-placeholder': 'Select person',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     neighbourhood = forms.ModelChoiceField(
         queryset=Neighbourhood.objects.all(),
         widget=NeighbourhoodWidget2(
             attrs={'data-placeholder': 'Select neighbourhood',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     class Meta:
         model = NeighbourhoodPersonRelation
@@ -579,13 +579,13 @@ class PersonInstitutionRelationForm(ModelForm):
         widget=PersonWidget(
             attrs={'data-placeholder': 'Select a person',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     institution = forms.ModelChoiceField(
         queryset=Institution.objects.all(),
         widget=InstitutionWidget(
             attrs={'data-placeholder': 'Select institution',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     class Meta:
         model = PersonInstitutionRelation
@@ -598,13 +598,13 @@ class PersonInstallationRelationForm(ModelForm):
         widget=PersonWidget(
             attrs={'data-placeholder': 'Select a person',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     installation = forms.ModelChoiceField(
         queryset=Installation.objects.all(),
         widget=InstallationWidget(
             attrs={'data-placeholder': 'Select installation',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     class Meta:
         model = PersonInstallationRelation
@@ -617,13 +617,13 @@ class EvidencePersonRelationForm(ModelForm):
         widget=EvidenceWidget(
             attrs={'data-placeholder': 'Select evidence',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     person = forms.ModelChoiceField(
         queryset=Person.objects.all(),
         widget=PersonWidget(
             attrs={'data-placeholder': 'Select person',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     page_number = forms.CharField(required=False)
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 4}),
@@ -640,13 +640,13 @@ class InstitutionInstallationRelationForm(ModelForm):
         widget=InstallationWidget(
             attrs={'data-placeholder': 'Select installation',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     institution = forms.ModelChoiceField(
         queryset=Institution.objects.all(),
         widget=InstitutionWidget(
             attrs={'data-placeholder': 'Select institution',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
 
     class Meta:
         model = InstitutionInstallationRelation
@@ -659,13 +659,13 @@ class EvidenceInstallationRelationForm(ModelForm):
         widget=EvidenceWidget(
             attrs={'data-placeholder': 'Select evidence',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     installation = forms.ModelChoiceField(
         queryset=Installation.objects.all(),
         widget=InstallationWidget(
             attrs={'data-placeholder': 'Select installation',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     page_number = forms.CharField(required=False)
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 4}),
@@ -682,13 +682,13 @@ class EvidenceInstitutionRelationForm(ModelForm):
         widget=EvidenceWidget(
             attrs={'data-placeholder': 'Select evidence',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     institution = forms.ModelChoiceField(
         queryset=Institution.objects.all(),
         widget=InstitutionWidget(
             attrs={'data-placeholder': 'Select institution',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     page_number = forms.CharField(required=False)
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 4}),
@@ -705,13 +705,13 @@ class InstallationInstallationRelationForm(ModelForm):
         widget=InstallationWidget(
             attrs={'data-placeholder': 'Select installation',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     secondary = forms.ModelChoiceField(
         queryset=Installation.objects.all(),
         widget=InstallationWidget(
             attrs={'data-placeholder': 'Select installation',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 1}),
         required=False)
@@ -727,13 +727,13 @@ class InstitutionInstitutionRelationForm(ModelForm):
         widget=InstitutionWidget(
             attrs={'data-placeholder': 'Select institution',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     secondary = forms.ModelChoiceField(
         queryset=Institution.objects.all(),
         widget=InstitutionWidget(
             attrs={'data-placeholder': 'Select institution',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 1}),
         required=False)
@@ -749,13 +749,13 @@ class PersonPersonRelationForm(ModelForm):
         widget=PersonWidget(
             attrs={'data-placeholder': 'Select person',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     secondary = forms.ModelChoiceField(
         queryset=Person.objects.all(),
         widget=PersonWidget(
             attrs={'data-placeholder': 'Select person',
                    'style': 'width:100%;', 'class': 'searching',
-                   'data-minimum-input-length': '1'}))
+                   'data-minimum-input-length': '0'}))
     description = forms.CharField(widget=forms.Textarea(
         attrs={'style': 'width:100%', 'rows': 1}),
         required=False)
