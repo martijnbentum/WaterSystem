@@ -554,13 +554,16 @@ function update_filters() {
 function toggle_filter(filter_id) {
 	// toggles a filter on or off
 	var filter = document.getElementById(filter_id);
-    var installation_ids= filter.getAttribute('data_installation_ids').split(',');
+    //var installation_ids= filter.getAttribute('data_installation_ids').split(',');
+	var filter_info = filters.filter_dict[filter_id]
+	var installation_ids = filter_info.installation_ids
 	var action = 'add';
 	if ( active_filters.includes(filter_id) ) { 
 		//removing a filter
 		action = 'remove'; 
 		var index = active_filters.indexOf(filter_id) 
 		active_filters.splice(index,1);
+		filter_info.active = false;
 	} else {
 		// adding a filter
 		if (active_filters.length == 0) {
@@ -568,6 +571,7 @@ function toggle_filter(filter_id) {
 			active_installation_ids = [];	
 		}
 		active_filters.push(filter_id);
+		filter_info.active = true;
 	}
 	if (active_filters.length == 0) { 
 		//no more filters active, showing all installation of the city
@@ -579,6 +583,7 @@ function toggle_filter(filter_id) {
 	update_filters();
 	if ( active_installation_ids.length == city_active_installation_ids.length ) {
 		active_filters = [];
+		active_category_filters = [];
 	}
 } 
 
@@ -602,7 +607,9 @@ function check_category_filter_status(filter_ids) {
 
 function toggle_category_filter(category_filter_id) {
 	var category_filter = document.getElementById(category_filter_id);
-    var filter_ids= category_filter.getAttribute('data_filter_ids').split(',');
+	var category_filter_info = filters.category_filter_dict[category_filter_id]
+    //var filter_ids= category_filter.getAttribute('data_filter_ids').split(',');
+    var filter_ids= Object.keys(category_filter_info.filter_dict)
 	category_filter_status = check_category_filter_status(filter_ids);
 	if ( active_category_filters.includes(category_filter_id) && 
 			category_filter_status == 'complete') { 
