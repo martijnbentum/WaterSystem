@@ -9,6 +9,6 @@ urlpatterns = [
     path('map/', views.MapVisualization, name='map-visualization'),
     path('geojson_file/shapefiles/<str:filename>/', views.geojson_file, 
         name='geojson_file'),
-    path('get_neighbourhood/<str:installation_identifier>/', views.get_neighbourhood, 
-        name='get_neighbourhood'),
+    path('get_map_representation/<str:installation_identifier>/', views.get_map_representation, 
+        name='get_map_representation'),
 	]
