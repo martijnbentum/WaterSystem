@@ -14,6 +14,7 @@ from installations.models import Institution, Installation, WatersystemCategorie
 # Map Visualization map MAP
 def MapVisualization(request, city = 'Cairo'):
     f = Figure.objects.all()
+    figures = [x.to_dict() for x in f]
     f = serializers.serialize('json', f)
     f = json.loads(f)
     s = Style.objects.all()
@@ -24,6 +25,7 @@ def MapVisualization(request, city = 'Cairo'):
     # used for having access to the fields of city model in the js scripts
     cjs = json.loads(cjs) 
     n = Neighbourhood.objects.all()
+    neighbourhoods = [x.to_dict() for x in n]
     n = serializers.serialize('json', n)
     n = json.loads(n)
     installations = Installation.objects.all()
@@ -32,7 +34,7 @@ def MapVisualization(request, city = 'Cairo'):
     context = {'page_name': 'Map', 'figures': f, 'styles': s, 
     'cities': cities, 'cjs':cjs, 'neighbourhoods':n,'cities':cities,
     'installations':installations,'watersystemcategories':watersystemcategories,
-    'city':city,'filters':filters}
+    'city':city,'filters':filters, 'figure_dict':figures, 'neighbourhood_dict':neighbourhoods}
     return render(request, 'map/map.html', context)
 
 def geojson_file(request, filename):
