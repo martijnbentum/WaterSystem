@@ -1,4 +1,4 @@
-from installations.models import Figure, Style, City, Neighbourhood 
+from installations.models import Figure, Style, City, Neighbourhood, Installation 
 from installations.models import Institution, Installation, WatersystemCategories
 import json
 
@@ -206,11 +206,19 @@ class Filter():
         return json.dumps(d)
         
 
-            
-
-
-
-
-
-
+def installation_date_range():
+    installations = Installation.objects.all()
+    earliest_date = 10000
+    latest_date = 0
+    for installation in installations:
+        start = installation.map_start_date
+        end = installation.map_end_date
+        if start and start < earliest_date:
+            earliest_date = start
+        if end and end > latest_date: 
+            latest_date = end
+    if earliest_date > latest_date: earliest_date = 0
+    if latest_date == 0: latest_date = 2000
+    d = {'earliest_date':earliest_date, 'latest_date':latest_date}
+    return d
 
