@@ -206,8 +206,8 @@ class Filter():
         return json.dumps(d)
         
 
-def installation_date_range():
-    installations = Installation.objects.all()
+def installation_date_range(installations = None):
+    if not installations: installations = Installation.objects.all()
     earliest_date = 10000
     latest_date = 0
     for installation in installations:
@@ -219,6 +219,10 @@ def installation_date_range():
             latest_date = end
     if earliest_date > latest_date: earliest_date = 0
     if latest_date == 0: latest_date = 2000
+    if earliest_date > 100: earliest_date -=100 
+    if latest_date < 1800:  latest_date += 100 
+    earliest_date = int(earliest_date /100) * 100
+    latest_date = int(round(latest_date /100)) * 100
     d = {'earliest_date':earliest_date, 'latest_date':latest_date}
     return d
 
