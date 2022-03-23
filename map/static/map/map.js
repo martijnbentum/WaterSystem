@@ -94,17 +94,10 @@ function onEachFeature(feature,layer) {
 
 function make_pop_up(figure) {
 	//create a pop up based on the figure information
-	[app_name,model_name] = figure.model.split('.')
-	if (figure.fields.name.toLowerCase().includes('district')) {
-	var m = '<p class="mt-0 mb-0">'+figure.fields.name+'</p>'
-	}
-	else {
-	var m = '<p class="mt-2 mb-0">'+figure.fields.name+'</p>'
-	// {#m += '<p class="mt-2 mb-0">'+figure.fields.description+'</p>'#}
+	var m = '<p class="mt-2 mb-0">'+figure.name+'</p>'
 	m += '<a class = "btn btn-link btn-sm mt-1 pl-0 text-dark" href='
 	m += '/installations/figure/new/' + figure.pk
 	m += ' role="button"><i class="far fa-edit"></i></a>'
-	}
 	return m
 }
 
@@ -120,12 +113,12 @@ function add_popup_and_tooltip(data,pop_up,figure_name) {
 async function add_figure(figure) {
 	//function loads the json figure connected to figure through ajax
 	//fetches the correct style and creates a popup and tooltip
-	const response = await fetch('/map/geojson_file/'+figure.fields.geojson)
+	const response = await fetch('/map/geojson_file/'+figure.geojson)
 	const data = await response.json()
 	if (data.file == false || data.json == false) {return;}
 	style = make_style(figure);
 	var pop_up = make_pop_up(figure);
-	add_popup_and_tooltip(data,pop_up,figure.fields.name)
+	add_popup_and_tooltip(data,pop_up,figure.name)
 	// {#L.geoJSON(data).addTo(mymap)#}
 	var geosjson_layer = L.geoJSON(data,{style:style,onEachFeature:onEachFeature})
 	figure_layers.push({'figure':figure,'layer':geosjson_layer,'style':style})
@@ -164,17 +157,15 @@ function turnon_neighbourhood(data) {
 async function add_neighbourhood(neighbourhood) {
 	//function loads the json figure connected to figure through ajax
 	//fetches the correct style and creates a popup and tooltip
-	var path = neighbourhood.fields.extent_shapefile
+	var path = neighbourhood.geojson
 	const response = await fetch('/map/geojson_file/'+path)
-	// const response = await fetch('/media/'+neighbourhood.fields.extent_shapefile)
 	const data = await response.json()
-	if (neighbourhood.fields.style == null){ style = neighbourhood_style; }  
+	if (neighbourhood.style == null){ style = neighbourhood_style; }  
 	else {style = make_style(neighbourhood);}
-	var pop_up = make_pop_up_neighbour(neighbourhood);
+	var pop_up = make_pop_up(neighbourhood);
 	var tooltip_str = 'Neighbourhood '
-	tooltip_str += neighbourhood.fields.neighbourhood_number.toString();
+	tooltip_str += neighbourhood.number.toString();
 	add_popup_and_tooltip(data,pop_up,tooltip_str)
-	// {#L.geoJSON(data).addTo(mymap)#}
 	var geosjson_layer = L.geoJSON(data,
 		{style:style,onEachFeature:onEachFeature_neighbour})
 	Neighbourlayers.push({'neighbourhood':neighbourhood,
@@ -193,7 +184,7 @@ function make_pop_up_neighbour(neighbourhood) {
 	//create a pop up based on the neighbourhood information
 	[app_name,model_name] = neighbourhood.model.split('.')
 	var m = '<p class="mt-0 mb-0">'+'Neighbourhood '
-	m += neighbourhood.fields.neighbourhood_number+'</p>'
+	m += neighbourhood.number+'</p>'
 	m += '<a class = "btn btn-link btn-sm mt-1 pl-0 text-dark" href='
 	m += '/installations/neighbourhood/new/' + neighbourhood.pk
 	m += ' role="button"><i class="far fa-edit"></i></a>'
@@ -220,7 +211,8 @@ async function check_done_loading_neighbour(list,expected_n) {
 
 // add Neighbourhoods------------------------
 var Neighbourlayers = [];
-neighbourhoods = JSON.parse(document.getElementById('neighbourhoodsjs').textContent)
+//neighbourhoods = JSON.parse(document.getElementById('neighbourhoodsjs').textContent)
+neighbourhoods = JSON.parse(document.getElementById('neighbourhood_dict').textContent)
 
 for (i = 0; i<neighbourhoods.length; i++) {
 	//create figures to plot on the leaflet map
@@ -282,7 +274,8 @@ function get_style(pk) {
 function make_style(figure){
 	//create a dict that sets the style of a figure 
 	//(based on the style objects in the database
-	style= get_style(figure.fields.style);
+	var style= get_style(figure.style);
+	console.log(figure,style,'----')
 	var myStyle = {
 		"color": style.fields.color,
 		"weight": style.fields.stroke_weight,
@@ -302,8 +295,8 @@ function show_layers(){
 		layer = figure_layers[i];
 		//check whether a figure overlaps with the current time range 
 		//and only plot those that do
-		overlap = check_overlap(layer.figure.fields.start_date, 
-			layer.figure.fields.end_date)
+		overlap = check_overlap(layer.figure.map_start_date, 
+			layer.figure.map_end_date)
 		if (overlap) {mymap.addLayer(layer.layer);}
 		else {mymap.removeLayer(layer.layer);}
 	}
@@ -322,10 +315,12 @@ async function check_done_loading(list,expected_n) {
 //add Figures-------------------------------
 var figure_layers= [];
 styles = JSON.parse(document.getElementById('stylesjs').textContent)
-figures = JSON.parse(document.getElementById('figuresjs').textContent)
+//figures = JSON.parse(document.getElementById('figuresjs').textContent)
+figures = JSON.parse(document.getElementById('figure_dictjs').textContent)
 
 for (i = 0; i<figures.length; i++) {
 	//create figures to plot on the leaflet map
+	console.log(figures[i])
 	add_figure(figures[i]);
 }
 
@@ -350,6 +345,11 @@ noUiSlider.create(multi_slider, {
 
 function check_overlap(low,high){
 	//compare start and end date of a figure with start end date of the year slider
+	if (!low) { return false;} //figure should always have start date to be visible
+	if (!high) { // if end dat is not available check whether start date is after start
+		if (low >= start && low <= end) { return true;}
+		return false
+	}
 	if (low <= start && high >= start){ return true;}
 	if (low >= start && high <= end){ return true;}
 	if (low <= end && high >= start){ return true;}
