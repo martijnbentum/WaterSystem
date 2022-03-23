@@ -4,6 +4,7 @@ var mapCenter = [30.041394878798638,31.307350234985355]
 var mymap = L.map('map').setView(mapCenter, 13);
 var city_active_installation_ids = [];
 var active_installation_ids= [];
+var date_exclude_installation_ids = [];
 var active_filters = [];
 var active_category_filters = [];
 var filters = JSON.parse(document.getElementById('filtersjs').textContent)
@@ -136,7 +137,6 @@ function turnoff_neighbourhoods() {
 function highlight_neighbourhood(pk) {
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
-		console.log(n,n.neighbourhood,n.neighbourhood.pk,pk,'nnnn')
         if (n.neighbourhood.pk == pk) {
             n.layer.setStyle({fillOpacity:0.3});
         }
@@ -253,9 +253,8 @@ function setMapCenter(chosen) {
 	}
     highlight_city(chosen);
     city = chosen;
-    hide_show_elements();
-	//update_filters_after_city_change();
-	// was hard to get it to work with changing visible filters.
+	date_filter_installations();
+    //hide_show_elements();
 	active_filters = [];
 	active_category_filters = [];
 }
@@ -275,7 +274,6 @@ function make_style(figure){
 	//create a dict that sets the style of a figure 
 	//(based on the style objects in the database
 	var style= get_style(figure.style);
-	console.log(figure,style,'----')
 	var myStyle = {
 		"color": style.fields.color,
 		"weight": style.fields.stroke_weight,
@@ -297,7 +295,8 @@ function show_layers(){
 		//and only plot those that do
 		overlap = check_overlap(layer.figure.map_start_date, 
 			layer.figure.map_end_date)
-		if (overlap) {mymap.addLayer(layer.layer);}
+		console.log(layer,layer.figure.name, layer.figure.map_start_date, layer.figure.map_end_date, overlap)
+		if (overlap) {mymap.addLayer(layer.layer)}
 		else {mymap.removeLayer(layer.layer);}
 	}
 }
@@ -320,7 +319,6 @@ figures = JSON.parse(document.getElementById('figure_dictjs').textContent)
 
 for (i = 0; i<figures.length; i++) {
 	//create figures to plot on the leaflet map
-	console.log(figures[i])
 	add_figure(figures[i]);
 }
 
@@ -356,6 +354,32 @@ function check_overlap(low,high){
 	return false;
 }
 
+function date_filter_installations() {
+	// updates a list of installations ids that are outside the range of the date slider
+	// updates the displayed installations and the counts
+	for (i = 0; i< city_active_installation_ids.length; i++) {
+		installation_id = city_active_installation_ids[i];
+		installation = document.getElementById(installation_id)
+		var low = parseInt(installation.getAttribute('data_map_start_date'))
+		var high = parseInt(installation.getAttribute('data_map_end_date'))
+		var overlap = check_overlap(low,high);
+		console.log(installation_id,low,high, installation.innerHTML,overlap)
+		if ( overlap ) {
+			console.log('overlap',start,end)
+			if (date_exclude_installation_ids.includes(installation_id) ) { 
+				console.log('removing', installation_id)
+				var index = date_exclude_installation_ids.indexOf(installation_id);
+				date_exclude_installation_ids.splice(index,1);
+			}
+		} else { 
+			if (!date_exclude_installation_ids.includes(installation_id) ) {
+				date_exclude_installation_ids.push(installation_id); 
+			}	
+		}
+	}
+	hide_show_elements();
+}
+
 multi_slider.noUiSlider.on('change',handleYearSlider);
 
 function handleYearSlider(values) {
@@ -364,8 +388,8 @@ function handleYearSlider(values) {
 	//figures are shown
 	start= values[0];
 	end= values[1];
-	// console.log(values)
 	show_layers();
+	date_filter_installations();
 }
 //----------------------------------------
 //create slider to control opacity of the map tiles
@@ -420,7 +444,8 @@ function _update_installations(update_counts = true) {
     for (let i= 0;i< installation_ids.length;i++) {
         var identifier = installation_ids[i];
         installation = document.getElementById(identifier+'-item');
-        if (active_installation_ids.includes(identifier)) {
+        if (active_installation_ids.includes(identifier) 
+			&& !date_exclude_installation_ids.includes(identifier) ) {
             installation.style.display = '';
         } else {
             installation.style.display = "none";
@@ -437,7 +462,8 @@ function count_active_installation_ids(installation_ids) {
 	count = 0;
     for (let i= 0;i< installation_ids.length;i++) {
         var identifier= installation_ids[i];
-		if ( active_installation_ids.includes(identifier) ) {
+		if ( active_installation_ids.includes(identifier) 
+			&& !date_exclude_installation_ids.includes(identifier) ) {
 			count ++
 		}
 	}
@@ -476,7 +502,6 @@ function update_filter_counts() {
 	var filters = document.getElementsByClassName('filter-count');
     for (let i= 0;i< filters.length;i++) {
         var filter = filters[i];
-		//console.log(filter);
 		var installation_ids = filter.getAttribute('data_installation_ids').split(',');
 		var count = count_active_installation_ids(installation_ids);
 		if ( count == 0 ) {
@@ -639,7 +664,6 @@ function turnoff_figure() {
 function highlight_figure(figure) {
     for (let i = 0;  i < figure_layers.length;i++) {
         var figure_layer = figure_layers[i];
-		console.log(figure_layer.figure.pk,figure,'figure')
         if (figure_layer.figure.pk == figure.pk) {
             figure_layer.layer.setStyle({color: '#f01d94',
             	weight: figure_layer.style.weight *2});
