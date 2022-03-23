@@ -70,6 +70,10 @@ class Neighbourhood(models.Model):
         d = {}
         d['name'] = self.name
         d['pk'] = self.pk
+        d['style'] = self.style.pk if self.style else None
+        d['geojson'] = self.extent_shapefile.name if self.extent_shapefile else None
+        d['number'] = self.neighbourhood_number
+        d['city'] = self.city.pk if self.city else None
         return d
 
 class Figure(models.Model):
@@ -100,7 +104,7 @@ class Figure(models.Model):
         d['map_start_date'] = self.map_start_date
         d['map_end_date'] = self.map_end_date
         d['geojson'] = self.geojson.name if self.geojson else None
-        d['discription'] = self.map_description
+        d['description'] = self.description
         return d
 
     @property
