@@ -211,8 +211,7 @@ async function check_done_loading_neighbour(list,expected_n) {
 
 // add Neighbourhoods------------------------
 var Neighbourlayers = [];
-//neighbourhoods = JSON.parse(document.getElementById('neighbourhoodsjs').textContent)
-neighbourhoods = JSON.parse(document.getElementById('neighbourhood_dict').textContent)
+neighbourhoods = JSON.parse(document.getElementById('neighbourhoodsjs').textContent)
 
 for (i = 0; i<neighbourhoods.length; i++) {
 	//create figures to plot on the leaflet map
@@ -295,7 +294,6 @@ function show_layers(){
 		//and only plot those that do
 		overlap = check_overlap(layer.figure.map_start_date, 
 			layer.figure.map_end_date)
-		console.log(layer,layer.figure.name, layer.figure.map_start_date, layer.figure.map_end_date, overlap)
 		if (overlap) {mymap.addLayer(layer.layer)}
 		else {mymap.removeLayer(layer.layer);}
 	}
@@ -314,8 +312,7 @@ async function check_done_loading(list,expected_n) {
 //add Figures-------------------------------
 var figure_layers= [];
 styles = JSON.parse(document.getElementById('stylesjs').textContent)
-//figures = JSON.parse(document.getElementById('figuresjs').textContent)
-figures = JSON.parse(document.getElementById('figure_dictjs').textContent)
+figures = JSON.parse(document.getElementById('figuresjs').textContent)
 
 for (i = 0; i<figures.length; i++) {
 	//create figures to plot on the leaflet map
@@ -327,13 +324,14 @@ check_done_loading(figure_layers,figures.length);
 
 // date slider
 // Multi slider for Date range
-var start = 500;
-var end = 1200;
+var date_range = JSON.parse(document.getElementById('date_rangejs').textContent)
+var start = date_range['earliest_date'];
+var end = date_range['latest_date'];
 var multi_slider = document.getElementById('years');
 noUiSlider.create(multi_slider, {
 	start: [start, end],
 	connect: true,
-	range: {'min':300,'max':1500},
+	range: {'min':date_range['earliest_date'],'max':date_range['latest_date']},
 	steps: 50,
 	tooltips: true,
 	format: {to: function (value) {return Math.floor(value)},
@@ -363,11 +361,8 @@ function date_filter_installations() {
 		var low = parseInt(installation.getAttribute('data_map_start_date'))
 		var high = parseInt(installation.getAttribute('data_map_end_date'))
 		var overlap = check_overlap(low,high);
-		console.log(installation_id,low,high, installation.innerHTML,overlap)
 		if ( overlap ) {
-			console.log('overlap',start,end)
 			if (date_exclude_installation_ids.includes(installation_id) ) { 
-				console.log('removing', installation_id)
 				var index = date_exclude_installation_ids.indexOf(installation_id);
 				date_exclude_installation_ids.splice(index,1);
 			}
