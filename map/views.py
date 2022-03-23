@@ -13,28 +13,23 @@ from installations.models import Institution, Installation, WatersystemCategorie
 
 # Map Visualization map MAP
 def MapVisualization(request, city = 'Cairo'):
-    f = Figure.objects.all()
-    figures = [x.to_dict() for x in f]
-    f = serializers.serialize('json', f)
-    f = json.loads(f)
+    figures = [x.to_dict() for x in Figure.objects.all()]
     s = Style.objects.all()
     s = serializers.serialize('json', s)
     s = json.loads(s)
     cities = City.objects.all() # used for the selection dropdown
-    cjs = serializers.serialize('json', cities)
     # used for having access to the fields of city model in the js scripts
+    cjs = serializers.serialize('json', cities)
     cjs = json.loads(cjs) 
-    n = Neighbourhood.objects.all()
-    neighbourhoods = [x.to_dict() for x in n]
-    n = serializers.serialize('json', n)
-    n = json.loads(n)
+    neighbourhoods = [x.to_dict() for x in Neighbourhood.objects.all()]
     installations = Installation.objects.all()
+    date_range = map_util.installation_date_range(installations)
     watersystemcategories = WatersystemCategories.objects.all()
     filters = map_util.Filters().to_dict()
-    context = {'page_name': 'Map', 'figures': f, 'styles': s, 
-    'cities': cities, 'cjs':cjs, 'neighbourhoods':n,'cities':cities,
+    context = {'page_name': 'Map', 'figures': figures, 'styles': s, 
+    'cjs':cjs, 'cities':cities,'date_range':date_range,
     'installations':installations,'watersystemcategories':watersystemcategories,
-    'city':city,'filters':filters, 'figure_dict':figures, 'neighbourhood_dict':neighbourhoods}
+    'city':city,'filters':filters, 'neighbourhoods':neighbourhoods}
     return render(request, 'map/map.html', context)
 
 def geojson_file(request, filename):
