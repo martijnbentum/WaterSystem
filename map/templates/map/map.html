@@ -39,13 +39,12 @@
 
         <div id="map"></div>
         {{figures|json_script:"figuresjs"}}
-        {{figure_dict|json_script:"figure_dictjs"}}
         {{styles|json_script:"stylesjs"}}
         {{cjs|json_script:"cjsjs"}}
         {{neighbourhoods|json_script:"neighbourhoodsjs"}}
         {{city|json_script:"cityjs"}}
         {{filters|json_script:"filtersjs"}}
-        {{neighbourhood_dict|json_script:'neighbourhood_dict'}}
+        {{date_range|json_script:"date_rangejs"}}
 
     </div>
     {% include 'map/right_sidebar.html' %}
