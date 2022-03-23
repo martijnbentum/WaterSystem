@@ -8,6 +8,8 @@
             <a href="{% url installation.detail_url installation.pk %}"
                 class='installation-title'
                 id="{{installation.identifier}}"
+				data_map_start_date="{{installation.map_start_date}}"
+				data_map_end_date="{{installation.map_end_date}}"
                 onmouseover="turnon_map_repr('{{installation.identifier}}')"
                 onmouseout="turnoff_map_repr()">
                 {{installation}}
