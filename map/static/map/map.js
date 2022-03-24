@@ -252,10 +252,11 @@ function setMapCenter(chosen) {
 	}
     highlight_city(chosen);
     city = chosen;
-	date_filter_installations();
-    //hide_show_elements();
 	active_filters = [];
 	active_category_filters = [];
+	date_filter_installations();
+	update_filters();
+    //hide_show_elements();
 }
 
 // style
@@ -284,17 +285,35 @@ function make_style(figure){
 	return myStyle
 }
 
+function check_installation_id(figure) {
+	//checks whether a figure should be shown based on possible linked installations
+	if (!figure.installation_ids) 
+		// if no installation are linked, show status = true, could be removed
+		// based on the date filter
+		{ return true } 
+	for (let i = 0; i< figure.installation_ids.length; i ++) {
+		installation_id = figure.installation_ids[i]
+		if ( active_installation_ids.includes(installation_id) ) {
+			// if a linked installation_id is active show the figure
+			return true
+		}
+	}
+	// if it is linked to installation_ids and none are currently active, 
+	//do not show figure
+	return false
+}
 
 function show_layers(){
 	//show the figures in the order of the z index
 	figure_layers.sort((a,b) => a.style.z_index - b.style.z_index)
-	for (i = 0; i<figure_layers.length; i++) {
+	for (let i = 0; i<figure_layers.length; i++) {
 		layer = figure_layers[i];
 		//check whether a figure overlaps with the current time range 
 		//and only plot those that do
 		overlap = check_overlap(layer.figure.map_start_date, 
 			layer.figure.map_end_date)
-		if (overlap) {mymap.addLayer(layer.layer)}
+		show = check_installation_id(layer.figure)
+		if (overlap && show) {mymap.addLayer(layer.layer)}
 		else {mymap.removeLayer(layer.layer);}
 	}
 }
@@ -358,6 +377,7 @@ function date_filter_installations() {
 	for (i = 0; i< city_active_installation_ids.length; i++) {
 		installation_id = city_active_installation_ids[i];
 		installation = document.getElementById(installation_id)
+		if (!installation) { continue;}
 		var low = parseInt(installation.getAttribute('data_map_start_date'))
 		var high = parseInt(installation.getAttribute('data_map_end_date'))
 		var overlap = check_overlap(low,high);
@@ -467,29 +487,6 @@ function count_active_installation_ids(installation_ids) {
 
 // FILTERS filters filter filtering
 
-function update_filters_after_city_change() {
-	var temp = [...active_filters];
-	for (i = 0; i<temp.length; i++) {
-		filter_id = temp[i]
-		var filter = document.getElementById(filter_id);
-		if ( !Boolean(filter) ) { continue; }
-		var index = active_filters.indexOf(filter_id)
-		active_filters.splice(index,1)
-		if ( filter.style.display == 'none' ) { continue}
-		toggle_filter(filter_id)
-	}
-	var temp = [...active_category_filters];
-	for (i = 0; i<temp.length; i++) {
-		category_filter_id = temp[i]
-		var category_filter = document.getElementById(category_filter_id);
-		if ( !Boolean(category_filter) ) { continue; }
-		var index = active_category_filters.indexOf(filter_id)
-		active_category_filters.splice(index,1)
-		if ( category_filter.style.display == 'none' ) { continue}
-		toggle_category_filter(category_filter_id);	
-	}
-	update_filters();
-}
 
 function update_filter_counts() {
 	//displays the number of instances for each filter and category there are
@@ -520,11 +517,11 @@ function update_filter_counts() {
 function update_active_installation_ids(installation_ids, action) {
 	for (let i= 0; i < installation_ids.length; i++) {
 		var installation_id = installation_ids[i];
-		if ( action == 'add' && city_active_installation_ids.includes(installation_id) ) {
+		if ( action == 'add' && city_active_installation_ids.includes(installation_id)){
 			if ( !active_installation_ids.includes(installation_id) )
 				active_installation_ids.push(installation_id);
 		}
-		else if ( action == 'remove' && active_installation_ids.includes(installation_id) ) {
+		else if (action=='remove' && active_installation_ids.includes(installation_id)){
 			var index = active_installation_ids.indexOf(installation_id);
 			active_installation_ids.splice(index,1);
 		}
@@ -599,6 +596,7 @@ function toggle_filter(filter_id) {
 		active_filters = [];
 		active_category_filters = [];
 	}
+	show_layers(); // updates figures on the map
 } 
 
 function check_category_filter_status(filter_ids) {
