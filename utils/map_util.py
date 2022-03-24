@@ -162,7 +162,7 @@ class CategoryFilter():
 
 class Filter():
 	def __init__(self, name, watersystem_instances, watersystem_category):
-		self.name = name.replace(',','')
+		self.name = name.replace(',','').replace('(','').replace(')','')
 		self.watersystem_instances = watersystem_instances
 		self.watersystem_category = watersystem_category
 		self.category_name = watersystem_category.name
