@@ -457,7 +457,7 @@ function count_active_installation_ids(installation_ids) {
 	count = 0;
     for (let i= 0;i< installation_ids.length;i++) {
         var identifier= installation_ids[i];
-		if ( active_installation_ids.includes(identifier) 
+		if ( city_active_installation_ids.includes(identifier) 
 			&& !date_exclude_installation_ids.includes(identifier) ) {
 			count ++
 		}
