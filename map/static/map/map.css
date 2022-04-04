@@ -68,6 +68,11 @@
 	margin-left:20px;
 }
 
+.installation-highlight {
+	color: black !important;
+	font-size: 15px !important;
+}
+
 .sidebar a:hover {
 	color: #ff0000;
 }
@@ -159,4 +164,5 @@
 	height:2px;
 	border:0px solid grey;
  }
+
 
