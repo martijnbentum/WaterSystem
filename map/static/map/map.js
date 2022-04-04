@@ -10,10 +10,13 @@ var active_category_filters = [];
 var filters = JSON.parse(document.getElementById('filtersjs').textContent)
 var highlighted_installations = [];
 var highlighted_neighbourhood_layer= null;
+var neighbourhood_activate_installation_ids = []
+var neighbourhood_layers_clicked = []
 
 var neighbourhood_style = {"color": "#9AD076","weight": 3,"opacity": 0.8,
 	"fillOpacity": 0,"z_index": 0};
 neighbourhood_style ={...neighbourhood_style,...{"dashArray": '20, 20'}}
+neighbourhood_color = null;
 
 
 // Js for sidebar
@@ -130,6 +133,7 @@ async function add_figure(figure) {
 // neighbourhoods
 
 function turnoff_neighbourhoods() {
+	// turns of highlight (created by hovering over an installation in the right sidebar)
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
 		if (n == highlighted_neighbourhood_layer) {continue}
@@ -138,6 +142,7 @@ function turnoff_neighbourhoods() {
 }
 
 function highlight_neighbourhood(pk) {
+	// highlights a neighbourhood (by hovering over an installation in the right sidebar)
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
 		if (n == highlighted_neighbourhood_layer) {continue}
@@ -158,6 +163,8 @@ function turnon_neighbourhood(data) {
 }
 
 function find_neighbourhood(leaflet_id) {
+	// find neighbourhood_layer based on leaflet element (provided by onhover onclick)
+	// the neighbourhood_layer and leaflet element are apperently distinct things
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
 		if (n.layer._leaflet_id == leaflet_id) { return n;}
@@ -172,14 +179,13 @@ function highlight_installations_on_hover(installation_ids) {
 		var installation_id = installation_ids[i];
 		var installation = document.getElementById(installation_id);
 		installation.classList.add('installation-highlight')
-		console.log(installation_id,installation);
 		highlighted_installations.push(installation);
 	}
 
 }
 
 function turnoff_installations() {
-	// turn of previously highlighted installations in the list
+	// turn of previously highlighted installations (on neighbourhood hover) in the list
     for (let i = 0;  i < highlighted_installations.length;i++) {
 		var installation= highlighted_installations[i];
 		installation.classList.remove('installation-highlight')
@@ -187,27 +193,75 @@ function turnoff_installations() {
 	highlighted_installations = []
 }
 
-function highlight_neighbourhood_on_hover(ev) {
-	console.log(ev,ev.layer._leaflet_id);
+function turnoff_previously_hovered_neighbourhood() {
+	// turns of highlight of previously hover neighbourhood
 	if (highlighted_neighbourhood_layer) {
 		// turn of previously highlighted neighbourhood
-		highlighted_neighbourhood_layer.layer.setStyle({fillOpacity:0.0});
+		if (neighbourhood_layers_clicked.includes(highlighted_neighbourhood_layer)) {
+			// if the neighbourhood is clicked 'on' set it to clicked status
+			var s = {color: '#769dd0',fillOpacity:0.6};
+			highlighted_neighbourhood_layer.layer.setStyle(s);
+		} else {
+			highlighted_neighbourhood_layer.layer.setStyle({fillOpacity:0.0});
+		}
 	}
-	turnoff_installations()
+}
+
+function highlight_neighbourhood_on_hover(ev) {
+	// highlights neighbourhood when hovered over 
+	// highlights linked installations in the right sidebar
+	turnoff_previously_hovered_neighbourhood(); 
+	turnoff_installations(); // turn of previously highlighted installations
 	var neighbourhood_layer = find_neighbourhood(ev.target._leaflet_id)
 	highlighted_neighbourhood_layer = neighbourhood_layer;
 	var installation_ids = neighbourhood_layer.neighbourhood.installation_ids
 	if (installation_ids) {
 		highlight_installations_on_hover(installation_ids)
-		ev.layer.setStyle({fillOpacity:0.6})
+		highlighted_neighbourhood_layer.layer.setStyle({fillOpacity:0.6})
+	} else {
+		highlighted_neighbourhood_layer.layer.setStyle({fillOpacity:0.1})
 	}
+	
 } 
 
-function select_neighbourhood_on_click(ev) {
+function _set_neighbourhood_active_installations() {
+	// udpate the neighbourhood_activate_installation_ids with installation linked to
+	// the neighbourhoods in the neighbourhood_layers_clicked array
+	// helper function of toggle_neighbourhood_on_click
+	neighbourhood_activate_installation_ids = [];
+	for (let i = 0;i < neighbourhood_layers_clicked.length;i++) {
+		// loop over neighbourhood_layers in the clicked array
+		var neighbourhood_layer = neighbourhood_layers_clicked[i]
+		var installation_ids = neighbourhood_layer.neighbourhood.installation_ids
+		for (let j = 0;  j < installation_ids.length;j++) {
+			//loop over the installation_ids linked to a given neighbourhood
+			var installation_id = installation_ids[j];
+			if (!neighbourhood_activate_installation_ids.includes(installation_id)) {
+				index=neighbourhood_activate_installation_ids.indexOf(installation_id)
+				neighbourhood_activate_installation_ids.push(installation_id);
+			}
+		}
+	}
+}
+
+function toggle_neighbourhood_on_click(ev) {
+	// activates / inactivates a neighbourhood, changes color of neighbourhood
+	// adds linked installation_ids to the neighbourhood_activate_installation_ids
+	// filters the installations shown in the right sidebar
 	var neighbourhood_layer = find_neighbourhood(ev.target._leaflet_id)
 	var installation_ids = neighbourhood_layer.neighbourhood.installation_ids
 	if (!installation_ids) { return }
-	console.log(neighbourhood_layer,installation_ids,'clicked');
+	if (neighbourhood_layers_clicked.includes(neighbourhood_layer) ) {
+		var index = neighbourhood_layers_clicked.indexOf(neighbourhood_layer);
+		neighbourhood_layers_clicked.splice(index,1)
+		neighbourhood_layer.layer.setStyle({color: neighbourhood_color,fillOpacity:0.0});
+		_set_neighbourhood_active_installations()
+	} else {
+		neighbourhood_layer.layer.setStyle({color: '#769dd0',fillOpacity:0.6});
+		neighbourhood_layers_clicked.push(neighbourhood_layer);
+		_set_neighbourhood_active_installations()
+	}
+	hide_show_elements()
 }
 
 async function add_neighbourhood(neighbourhood) {
@@ -224,7 +278,7 @@ async function add_neighbourhood(neighbourhood) {
 	// add_popup_and_tooltip(data,pop_up,tooltip_str)
 	var geosjson_layer = L.geoJSON(data,{style:style})
 	geosjson_layer.on('mouseover',highlight_neighbourhood_on_hover)
-	geosjson_layer.on('click',select_neighbourhood_on_click)
+	geosjson_layer.on('click',toggle_neighbourhood_on_click)
 	Neighbourlayers.push({'neighbourhood':neighbourhood,
 		'layer':geosjson_layer,'style':style})
 }
@@ -263,6 +317,7 @@ async function check_done_loading_neighbour(list,expected_n) {
 		if (list.length == expected_n) {break;}
 	}
 	show_layers_neighbour();
+	neighbourhood_color = Neighbourlayers[0].style.color
 }
 
 
@@ -516,8 +571,20 @@ function _update_installations(update_counts = true) {
     for (let i= 0;i< installation_ids.length;i++) {
         var identifier = installation_ids[i];
         installation = document.getElementById(identifier+'-item');
-        if (active_installation_ids.includes(identifier) 
+		if (neighbourhood_activate_installation_ids.length > 0) {
+			// if any neighbourhood is clicked, also check whether the id 
+			// is part of neighbourhood_activate_installation_ids array
+			if (active_installation_ids.includes(identifier) 
+				&& neighbourhood_activate_installation_ids.includes(identifier)
+				&& !date_exclude_installation_ids.includes(identifier) ) {
+				installation.style.display = '';
+			} else {
+				installation.style.display = "none";
+			}
+		}
+        else if (active_installation_ids.includes(identifier) 
 			&& !date_exclude_installation_ids.includes(identifier) ) {
+			// if no neighbourhood is clicked only check active array and date exclusion
             installation.style.display = '';
         } else {
             installation.style.display = "none";
@@ -534,8 +601,19 @@ function count_active_installation_ids(installation_ids) {
 	count = 0;
     for (let i= 0;i< installation_ids.length;i++) {
         var identifier= installation_ids[i];
-		if ( city_active_installation_ids.includes(identifier) 
+		if (neighbourhood_activate_installation_ids.length > 0) {
+			// if a neighbourhood is clicked also take into account the 
+			// neighbourhood_activate_installation_ids array
+			if ( city_active_installation_ids.includes(identifier) 
+				&& neighbourhood_activate_installation_ids.includes(identifier)
+				&& !date_exclude_installation_ids.includes(identifier) ) {
+				count ++
+			}
+		}
+		else if ( city_active_installation_ids.includes(identifier) 
 			&& !date_exclude_installation_ids.includes(identifier) ) {
+			// if no neighbourhood is clicked
+			// only take into account active ids and data exclusion
 			count ++
 		}
 	}
@@ -731,6 +809,9 @@ function turnon_figure(data) {
 async function turnon_map_repr(installation_identifier) {
     const response=await fetch('/map/get_map_representation/'+installation_identifier)
     const data = await response.json()
+	turnoff_previously_hovered_neighbourhood(); //turn of neighbourhood hover highlights
+	turnoff_installations(); //turn of neighbourhood hover highlights
+
 	turnon_neighbourhood(data);
 	turnon_figure(data)
 }
