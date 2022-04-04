@@ -69,8 +69,8 @@
 }
 
 .installation-highlight {
-	color: black !important;
-	font-size: 15px !important;
+	color: #fc2d49 !important;
+	/*font-size: 15px !important;*/
 }
 
 .sidebar a:hover {
