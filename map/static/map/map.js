@@ -8,6 +8,8 @@ var date_exclude_installation_ids = [];
 var active_filters = [];
 var active_category_filters = [];
 var filters = JSON.parse(document.getElementById('filtersjs').textContent)
+var highlighted_installations = [];
+var highlighted_neighbourhood_layer= null;
 
 var neighbourhood_style = {"color": "#9AD076","weight": 3,"opacity": 0.8,
 	"fillOpacity": 0,"z_index": 0};
@@ -130,6 +132,7 @@ async function add_figure(figure) {
 function turnoff_neighbourhoods() {
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
+		if (n == highlighted_neighbourhood_layer) {continue}
         n.layer.setStyle({fillOpacity:0.0});
     }
 }
@@ -137,6 +140,7 @@ function turnoff_neighbourhoods() {
 function highlight_neighbourhood(pk) {
     for (let i = 0;  i < Neighbourlayers.length;i++) {
         var n = Neighbourlayers[i];
+		if (n == highlighted_neighbourhood_layer) {continue}
         if (n.neighbourhood.pk == pk) {
             n.layer.setStyle({fillOpacity:0.3});
         }
@@ -144,7 +148,7 @@ function highlight_neighbourhood(pk) {
 }
 
 function turnon_neighbourhood(data) {
-	//heighlights neighbourhood on installation hover
+	//highlights neighbourhood on installation hover
     // turnoff_neighbourhoods();
     var d = data['neighbourhoods']
     for (let i = 0;  i < d.length;i++) {
@@ -153,6 +157,58 @@ function turnon_neighbourhood(data) {
     }
 }
 
+function find_neighbourhood(leaflet_id) {
+    for (let i = 0;  i < Neighbourlayers.length;i++) {
+        var n = Neighbourlayers[i];
+		if (n.layer._leaflet_id == leaflet_id) { return n;}
+	}
+	return null
+}
+
+function highlight_installations_on_hover(installation_ids) {
+	// highlights installation on neighbourhood hover
+	if (!installation_ids) {return}
+    for (let i = 0;  i < installation_ids.length;i++) {
+		var installation_id = installation_ids[i];
+		var installation = document.getElementById(installation_id);
+		installation.classList.add('installation-highlight')
+		console.log(installation_id,installation);
+		highlighted_installations.push(installation);
+	}
+
+}
+
+function turnoff_installations() {
+	// turn of previously highlighted installations in the list
+    for (let i = 0;  i < highlighted_installations.length;i++) {
+		var installation= highlighted_installations[i];
+		installation.classList.remove('installation-highlight')
+	}
+	highlighted_installations = []
+}
+
+function highlight_neighbourhood_on_hover(ev) {
+	console.log(ev,ev.layer._leaflet_id);
+	if (highlighted_neighbourhood_layer) {
+		// turn of previously highlighted neighbourhood
+		highlighted_neighbourhood_layer.layer.setStyle({fillOpacity:0.0});
+	}
+	turnoff_installations()
+	var neighbourhood_layer = find_neighbourhood(ev.target._leaflet_id)
+	highlighted_neighbourhood_layer = neighbourhood_layer;
+	var installation_ids = neighbourhood_layer.neighbourhood.installation_ids
+	if (installation_ids) {
+		highlight_installations_on_hover(installation_ids)
+		ev.layer.setStyle({fillOpacity:0.6})
+	}
+} 
+
+function select_neighbourhood_on_click(ev) {
+	var neighbourhood_layer = find_neighbourhood(ev.target._leaflet_id)
+	var installation_ids = neighbourhood_layer.neighbourhood.installation_ids
+	if (!installation_ids) { return }
+	console.log(neighbourhood_layer,installation_ids,'clicked');
+}
 
 async function add_neighbourhood(neighbourhood) {
 	//function loads the json figure connected to figure through ajax
@@ -165,9 +221,10 @@ async function add_neighbourhood(neighbourhood) {
 	var pop_up = make_pop_up(neighbourhood);
 	var tooltip_str = 'Neighbourhood '
 	tooltip_str += neighbourhood.number.toString();
-	add_popup_and_tooltip(data,pop_up,tooltip_str)
-	var geosjson_layer = L.geoJSON(data,
-		{style:style,onEachFeature:onEachFeature_neighbour})
+	// add_popup_and_tooltip(data,pop_up,tooltip_str)
+	var geosjson_layer = L.geoJSON(data,{style:style})
+	geosjson_layer.on('mouseover',highlight_neighbourhood_on_hover)
+	geosjson_layer.on('click',select_neighbourhood_on_click)
 	Neighbourlayers.push({'neighbourhood':neighbourhood,
 		'layer':geosjson_layer,'style':style})
 }
@@ -665,7 +722,7 @@ function highlight_figure(figure) {
 }
 
 function turnon_figure(data) {
-	//heighlights figure on installation hover
+	//highlights figure on installation hover
     var figure = data['figure']
 	if (figure) { highlight_figure(figure) }
 }
