@@ -587,19 +587,12 @@ class ReligionDeleteView(DeleteView):
     success_url = reverse_lazy("installations:religion-list")
 
 
-@method_decorator(login_required, name='dispatch')
-class NeighbourhoodCreatView(CreateView):
-    model = Neighbourhood
-    form_class = NeighbourhoodForms
-    template_name = 'installations/neighbourhood_form.html'
+@login_required
+def edit_neighbourhood(request, pk=None, focus='', view='complete'):
+    names = ''
+    return edit_model(request, __name__, 'Neighbourhood', 'installations', pk, 
+        formset_names=names,focus=focus, view=view)
 
-    def get_success_url(self):
-        if 'view' in self.kwargs:
-            viewmode = self.kwargs['view']
-            if viewmode == 'inline':
-                return reverse_lazy('utilities:close')
-        else:
-            return reverse_lazy('installations:neighbourhood-list')  
 
 
 @method_decorator(login_required, name='dispatch')
@@ -624,13 +617,30 @@ class NeighbourhoodListView(ListView):
         context["direction"] = self.request.GET.get("direction", "ascending")
         return context
 
+'''
+@method_decorator(login_required, name='dispatch')
+class NeighbourhoodCreatView(CreateView):
+    model = Neighbourhood
+    form_class = NeighbourhoodForm
+    template_name = 'installations/add_neighbourhood.html'
+
+    def get_success_url(self):
+        if 'view' in self.kwargs:
+            viewmode = self.kwargs['view']
+            if viewmode == 'inline':
+                return reverse_lazy('utilities:close')
+        else:
+            return reverse_lazy('installations:neighbourhood-list')  
+
 
 @method_decorator(login_required, name='dispatch')
 class NeighbourhoodUpdateView(UpdateView):
     model = Neighbourhood
     fields = '__all__'
+    template_name = 'installations/add_neighbourhood.html'
     success_url = reverse_lazy('installations:neighbourhood-list')
 
+'''
 
 @method_decorator(login_required, name='dispatch')
 class NeighbourhoodDeleteView(DeleteView):

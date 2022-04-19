@@ -128,17 +128,6 @@ urlpatterns = [
     url(r'^religion/delete/(?P<pk>\d+)/$', views.ReligionDeleteView.as_view(), 
         name='religion-delete'),
     path('religion/list', views.ReligionListView.as_view(), name='religion-list'),
-    path('neighbourhood/new/', views.NeighbourhoodCreatView.as_view(), 
-        name='neighbourhood-insert'),
-    path('neighbourhood/new/<str:view>/', views.NeighbourhoodCreatView.as_view(), 
-        name='neighbourhood-insert'),
-    path('neighbourhood/new/<int:pk>', views.NeighbourhoodUpdateView.as_view(), 
-        name='neighbourhood-update'),
-    url(r'^neighbourhood/delete/(?P<pk>\d+)/$', 
-        views.NeighbourhoodDeleteView.as_view(), 
-        name='neighbourhood-delete'),
-    path('neighbourhood/list', views.NeighbourhoodListView.as_view(), 
-        name='neighbourhood-list'),
 
     # Relations
     # ------------------------------
@@ -202,6 +191,19 @@ urlpatterns = [
     url(r'^figure/delete/(?P<pk>\d+)/$', views.FigureDeleteView.as_view(), 
         name='figure-delete'),
     path('figure/list', views.FigureListView.as_view(), name='figure-list'),
+    path('neighbourhood/new/', views.edit_neighbourhood,
+        name='neighbourhood-insert'),
+    path('neighbourhood/new/<str:view>/', views.edit_neighbourhood,
+        name='neighbourhood-insert'),
+    path('neighbourhood/new/<int:pk>', views.edit_neighbourhood, 
+        name='neighbourhood-update'),
+    path('neighbourhood/new/<int:pk>/<str:focus>', views.edit_neighbourhood, 
+        name='neighbourhood-update'),
+    url(r'^neighbourhood/delete/(?P<pk>\d+)/$', 
+        views.NeighbourhoodDeleteView.as_view(), 
+        name='neighbourhood-delete'),
+    path('neighbourhood/list', views.NeighbourhoodListView.as_view(), 
+        name='neighbourhood-list'),
     path('style/new/', views.StyleCreatView.as_view(), name='style-insert'),
     path('style/list', views.StyleListView.as_view(), name='style-list'),
     path('style/new/<int:pk>', views.StyleUpdateView.as_view(), name='style-update'),
@@ -212,3 +214,12 @@ urlpatterns = [
     # ----------------------------------------------
     path('accessory/', views.Accessory, name='accessory'),
 ]
+
+'''
+path('neighbourhood/new/', views.NeighbourhoodCreatView.as_view(), 
+	name='neighbourhood-insert'),
+path('neighbourhood/new/<str:view>/', views.NeighbourhoodCreatView.as_view(), 
+	name='neighbourhood-insert'),
+path('neighbourhood/new/<int:pk>', views.NeighbourhoodUpdateView.as_view(), 
+	name='neighbourhood-update'),
+'''
