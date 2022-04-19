@@ -512,7 +512,7 @@ class WatersystemCategoriesForm(ModelForm):
 class NeighbourhoodForms(ModelForm):
     extent_shapefile = forms.FileField(widget=forms.ClearableFileInput)
 
-    style = forms.ModelChoiceField(
+    style_field = forms.ModelChoiceField(
         queryset=Style.objects.all(),
         widget=StyleWidget(
             attrs={'data-placeholder': 'Select style',
@@ -521,11 +521,11 @@ class NeighbourhoodForms(ModelForm):
 
     class Meta:
         model = Neighbourhood
-        fields = ('city', 'neighbourhood_number', 'style', 'extent_shapefile')
+        fields = ('city', 'neighbourhood_number', 'style_field', 'extent_shapefile')
 
     def __init__(self, *args, **kwargs):
         super(NeighbourhoodForms, self).__init__(*args, **kwargs)
-        self.fields['style'].required = False
+        # self.fields['style'].required = False
 
 
 class InstitutionTypeForms(ModelForm):
